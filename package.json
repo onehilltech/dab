@@ -21,9 +21,9 @@
   "author": "One Hill Technologies, LLC",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/onehilltech/datamodel/issues"
+    "url": "https://github.com/onehilltech/dab/issues"
   },
-  "homepage": "https://github.com/onehilltech/datamodel#readme",
+  "homepage": "https://github.com/onehilltech/dab",
   "dependencies": {
     "async": "^2.2.0",
     "mongoose": "^4.9.1",
