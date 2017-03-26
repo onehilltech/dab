@@ -18,7 +18,7 @@ Features
 Getting Started
 ----------------
 
-First, define your data model:
+First, define your data model.
 
 ```javascript
 const dab = require ('@onehilltech/dab');
