@@ -4,7 +4,9 @@
   "description": "a complex data builder that uses simple definitions",
   "main": "./lib",
   "scripts": {
-    "test": "env NODE_ENV=test mocha --recursive tests/lib --reporter spec"
+    "test": "env NODE_ENV=test mocha --recursive tests/lib --reporter spec",
+    "cover": "env NODE_ENV=test istanbul cover _mocha --recursive tests/lib",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
