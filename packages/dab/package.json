@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/onehilltech/datamodel.git"
+    "url": "git+ssh://git@github.com/onehilltech/dab.git"
   },
   "keywords": [
     "mongoose",
