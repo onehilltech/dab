@@ -13,7 +13,7 @@ Features
 
 * Build data models from data definitions to seed databases
 * Compute data values based on other parts of the data model
-* Current supports [MongoDB](https://www.mongodb.com/) via [Mongoose](http://mongoosejs.com/) 
+* Supports [MongoDB](https://www.mongodb.com/) via [Mongoose](http://mongoosejs.com/) 
 
 Getting Started
 ----------------
