@@ -44,9 +44,8 @@ dab.build (data, function (err, model) {
 ```
 
 The result will be a data model where all objects have an ```_id``` property, and 
-all computed values are resolved. The returned model can also be used to seed a 
-MongoDB database. Each collection in the data model will contain instances of 
-Mongoose documents.
+all computed values are resolved. The returned model can also seed a MongoDB database. 
+Each collection in the data model will contain instances of Mongoose documents.
 
 ```javascript
 dab.seed (model, function (err, dm) {
