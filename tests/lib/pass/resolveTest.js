@@ -13,6 +13,18 @@ describe ('lib.pass.resolve', function () {
   }
 
   it ('should generate ids for all entries in the data model', function (done) {
+
+    function computeComment (user) {
+      var i = user;
+
+      return function __computeComment (data, opts, callback) {
+        const user = data.get ('users.' + i + '._id');
+        const comment = 'This is comment number ' + (this.index + 1);
+
+        return callback (null, {user: user, comment: comment});
+      }
+    }
+
     var data = {
       users: [
         {_id: new ObjectId (), first_name: 'James', last_name: 'Hill', email: dab.computed (computeEmail)},
@@ -25,7 +37,12 @@ describe ('lib.pass.resolve', function () {
       
       organizations: dab.times (2, function (data, opts, callback) {
         return callback (null, {name: 'Organization' + this.index, owner: dab.ref ('users.0')});
-      })
+      }),
+
+      comments: dab.concat (
+        dab.times (30, computeComment (0)),
+        dab.times (50, computeComment (1))
+      )
     };
 
     async.waterfall ([
@@ -45,6 +62,15 @@ describe ('lib.pass.resolve', function () {
 
         expect (data).to.have.deep.property ('organizations.1.name', 'Organization1');
         expect (data).to.have.deep.property ('organizations.1.owner').to.eql (data.users[0]._id);
+
+        expect (data.comments).to.have.length (80);
+        expect (data).to.have.deep.property ('comments.0.user').to.eql (data.users[0]._id);
+        expect (data).to.have.deep.property ('comments.0.comment', 'This is comment number 1');
+        expect (data).to.have.deep.property ('comments.29.comment', 'This is comment number 30');
+
+        expect (data).to.have.deep.property ('comments.30.user').to.eql (data.users[1]._id);
+        expect (data).to.have.deep.property ('comments.30.comment', 'This is comment number 1');
+        expect (data).to.have.deep.property ('comments.79.comment', 'This is comment number 50');
 
         return callback (null);
       }
