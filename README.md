@@ -14,6 +14,7 @@ Features
 * Build data models from data definitions to seed databases
 * Compute data values based on other parts of the data model
 * Supports [MongoDB](https://www.mongodb.com/) via [Mongoose](http://mongoosejs.com/) 
+* Plays nicely with [faker.js](https://github.com/Marak/faker.js)
 
 Getting Started
 ----------------
