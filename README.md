@@ -29,8 +29,8 @@ var data = {
     {first_name: 'Jane', last_name: 'Doe'}
   ],
   
-  relationship: [
-    {src: datamodel.ref ('users.0'), dst: datamodel.ref ('users.1'), kind: 'spouse'}
+  family: [
+    {user1: datamodel.ref ('users.0'), user2: datamodel.ref ('users.1'), relationship: 'spouse'}
   ]
 };
 ```
