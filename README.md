@@ -13,7 +13,7 @@ Features
 
 * Build data models from data definitions to seed databases
 * Compute data values based on other parts of the data model
-* Current supports MongoDB via Mongoose
+* Current supports [MongoDB](https://www.mongodb.com/) via [Mongoose](http://mongoosejs.com/) 
 
 Getting Started
 ----------------
@@ -43,9 +43,10 @@ dab.build (data, function (err, model) {
 });
 ```
 
-The result will be a data model where all objects have an ```_id``` property, and 
-all computed values are resolved. The returned model can also seed a MongoDB database. 
-Each collection in the data model will contain instances of Mongoose documents.
+The result will be a data model where all objects have an ```_id``` property, 
+and all computed values are resolved. The returned model can also seed a 
+[MongoDB](https://www.mongodb.com/) database. Each collection in the data model 
+will contain instances of [Mongoose](http://mongoosejs.com/) documents.
 
 ```javascript
 dab.seed (model, function (err, dm) {
