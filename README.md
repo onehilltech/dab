@@ -30,7 +30,7 @@ var data = {
   ],
   
   family: [
-    {user1: datamodel.ref ('users.0'), user2: datamodel.ref ('users.1'), relationship: 'spouse'}
+    {user1: dab.ref ('users.0'), user2: dab.ref ('users.1'), relationship: 'spouse'}
   ]
 };
 ```
@@ -38,7 +38,7 @@ var data = {
 Next, build the data model.
 
 ```javascript
-datamodel.build (data, function (err, model) {
+dab.build (data, function (err, model) {
   // model is the final data model
 });
 ```
@@ -49,7 +49,7 @@ MongoDB database. Each collection in the data model will contain instances of
 Mongoose documents.
 
 ```javascript
-datamodel.seed (model, function (err, dm) {
+dab.seed (model, function (err, dm) {
   // dm.users will be a collection of Mongoose documents
 });
 ```
