@@ -24,7 +24,7 @@ describe ('lib.pass.resolve', function () {
       ],
       
       organizations: dab.times (2, function (data, opts, callback) {
-        return callback (null, {name: 'Organization' + this.index});
+        return callback (null, {name: 'Organization' + this.index, owner: dab.ref ('users.0')});
       })
     };
 
@@ -41,7 +41,10 @@ describe ('lib.pass.resolve', function () {
 
         expect (data.organizations).to.have.length (2);
         expect (data).to.have.deep.property ('organizations.0.name', 'Organization0');
+        expect (data).to.have.deep.property ('organizations.0.owner').to.eql (data.users[0]._id);
+
         expect (data).to.have.deep.property ('organizations.1.name', 'Organization1');
+        expect (data).to.have.deep.property ('organizations.1.owner').to.eql (data.users[0]._id);
 
         return callback (null);
       }
