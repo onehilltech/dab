@@ -1,7 +1,7 @@
 {
   "name": "@onehilltech/dab",
   "version": "0.0.0",
-  "description": "Data model builder for Blueprint applications",
+  "description": "a complex data builder that uses simple definitions",
   "main": "./lib",
   "scripts": {
     "test": "env NODE_ENV=test mocha --recursive tests/lib --reporter spec"
