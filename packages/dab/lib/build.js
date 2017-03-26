@@ -6,6 +6,11 @@ const async = require ('async')
   ;
 
 function build (data, opts, callback) {
+  if (!callback) {
+    callback = opts;
+    opts = {};
+  }
+
   const steps = [
     async.constant (data),
     genIds (opts),
