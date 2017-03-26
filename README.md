@@ -56,7 +56,7 @@ dab.seed (model, function (err, dm) {
 Next Steps
 -----------------
     
-See our [Wiki](https://github.com/onehilltech/blueprint/dab/wiki) for more details 
+See our [Wiki](https://github.com/onehilltech/dab/wiki) for more details 
 on using dab.
 
 Need help? [Contact us](mailto:contact@onehilltech.com)
