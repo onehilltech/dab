@@ -1,7 +1,7 @@
 {
-  "name": "@onehilltech/datamodel",
+  "name": "@onehilltech/dab",
   "version": "0.0.0",
-  "description": "Data model generator for mongoose",
+  "description": "Data model builder for Blueprint applications",
   "main": "./lib",
   "scripts": {
     "test": "env NODE_ENV=test mocha --recursive tests/lib --reporter spec"
