@@ -44,7 +44,15 @@ datamodel.build (data, function (err, model) {
 ```
 
 The result will be a data model where all objects have an ```_id``` property, and 
-all computed values are resolved.
+all computed values are resolved. The returned model can also be used to seed a 
+MongoDB database. Each collection in the data model will contain instances of 
+Mongoose documents.
+
+```javascript
+datamodel.seed (model, function (err, dm) {
+  // dm.users will be a collection of Mongoose documents
+});
+```
 
 Next Steps
 -----------------
