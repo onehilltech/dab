@@ -2,13 +2,10 @@
 
 function ref (path) {
   return function __dabRef (data, opts, callback) {
-    var target = data.get (path);
+    var idPath = path + '.' + (opts.id || '_id');
+    var value = data.get (idPath);
 
-    if (!target)
-      return callback (null);
-
-    var key = opts.id || '_id';
-    return callback (null, target[key]);
+    return callback (null, value);
   }
 }
 
