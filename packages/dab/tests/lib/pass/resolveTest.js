@@ -1,24 +1,23 @@
-const expect  = require ('chai').expect
-  , resolve   = require ('../../../lib/pass/resolve')
-  , async     = require ('async')
-  , ObjectId  = require ('mongoose').Types.ObjectId
-  , dab = require ('../../../lib')
+const expect = require ('chai').expect
+  , resolve  = require ('../../../lib/pass/resolve')
+  , async    = require ('async')
+  , ObjectId = require ('mongoose').Types.ObjectId
+  , dab      = require ('../../../lib')
   ;
 
 
 describe ('lib.pass.resolve', function () {
-  function computeEmail (data, opts, callback) {
-    var email = this.first_name.toLowerCase() + '.' + this.last_name.toLowerCase() + '@tester.com';
-    return callback (null, email)
-  }
-
   it ('should generate ids for all entries in the data model', function (done) {
+    function computeEmail (data, opts, callback) {
+      var email = this.first_name.toLowerCase () + '.' + this.last_name.toLowerCase () + '@tester.com';
+      return callback (null, email)
+    }
 
     function computeComment (user) {
       var i = user;
 
       return function __computeComment (data, opts, callback) {
-        const user = data.get ('users.' + i + '._id');
+        const user = dab.get ('users.' + i + '._id');
         const comment = 'This is comment number ' + (this.index + 1);
 
         return callback (null, {user: user, comment: comment});

@@ -15,8 +15,15 @@ function resolveImpl (opts, data, context, item, callback) {
         item.call (context, data, opts, callback);
       },
 
-      function (values, callback) {
-        resolveImpl (opts, data, context, values, callback);
+      function (resolved, callback) {
+        if (resolved)
+          resolveImpl (opts, data, context, resolved, callback);
+        else if (resolved === undefined)
+          return callback (null, item);
+        else if (resolved === null)
+          return callback (null, null);
+        else
+          return callback (new Error ('Unknown value'))
       }
     ], callback);
   }

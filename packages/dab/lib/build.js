@@ -1,8 +1,8 @@
 'use strict';
 
-const async = require ('async')
-  , genIds  = require ('./pass/generateIds')
-  , resolve = require ('./pass/resolve')
+const async     = require ('async')
+  , generateIds = require ('./pass/generateIds')
+  , resolve     = require ('./pass/resolve')
   ;
 
 function build (data, opts, callback) {
@@ -11,13 +11,14 @@ function build (data, opts, callback) {
     opts = {};
   }
 
-  const steps = [
+  const phases = [
     async.constant (data),
-    genIds (opts),
+    resolve (opts),
+    generateIds (opts),
     resolve (opts)
   ];
 
-  async.waterfall (steps, callback);
+  async.waterfall (phases, callback);
 }
 
 module.exports = build;
