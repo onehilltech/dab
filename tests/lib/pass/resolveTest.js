@@ -47,7 +47,15 @@ describe ('lib.pass.resolve', function () {
       }),
 
       shuffled: dab.shuffle (dab.get ('comments')),
-      samples: dab.sample (dab.get ('comments'), 5)
+      samples: dab.sample (dab.get ('comments'), 5),
+
+      mapped: dab.map ([1, 2], function (item, data, opts, callback) {
+        return callback (null, item * 2);
+      }),
+
+      mappedObj: dab.map ({first_name: 'John', last_name: 'Doe'}, function (item, data, opts, callback) {
+        return callback (null, item.toLowerCase ());
+      })
     };
 
     async.waterfall ([
@@ -78,6 +86,10 @@ describe ('lib.pass.resolve', function () {
         expect (data).to.have.deep.property ('comments.77.comment', 'This is comment number 50');
 
         expect (data.samples).to.have.length (5);
+
+        // test the map function
+        expect (data.mapped).to.eql ([2, 4]);
+        expect (data.mappedObj).to.eql ({first_name: 'john', last_name: 'doe'});
 
         return callback (null);
       }
