@@ -44,7 +44,9 @@ describe ('lib.pass.resolve', function () {
         dab.times (50, computeComment (1))
       ), function (value, data, opts, callback) {
         return callback (null, value.comment !== 'This is comment number 1');
-      })
+      }),
+
+      shuffled: dab.shuffle (dab.get ('comments'))
     };
 
     async.waterfall ([

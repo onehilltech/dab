@@ -7,3 +7,5 @@ exports.computed = require ('./computed');
 exports.times = require ('./times');
 exports.concat = require ('./concat');
 exports.filter = require ('./filter');
+exports.shuffle = require ('./shuffle');
+exports.get = require ('./get');
