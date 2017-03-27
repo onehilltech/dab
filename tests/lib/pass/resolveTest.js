@@ -39,10 +39,12 @@ describe ('lib.pass.resolve', function () {
         return callback (null, {name: 'Organization' + this.index, owner: dab.ref ('users.0')});
       }),
 
-      comments: dab.concat (
+      comments: dab.filter (dab.concat (
         dab.times (30, computeComment (0)),
         dab.times (50, computeComment (1))
-      )
+      ), function (value, data, opts, callback) {
+        return callback (null, value.comment !== 'This is comment number 1');
+      })
     };
 
     async.waterfall ([
@@ -63,14 +65,14 @@ describe ('lib.pass.resolve', function () {
         expect (data).to.have.deep.property ('organizations.1.name', 'Organization1');
         expect (data).to.have.deep.property ('organizations.1.owner').to.eql (data.users[0]._id);
 
-        expect (data.comments).to.have.length (80);
+        expect (data.comments).to.have.length (78);
         expect (data).to.have.deep.property ('comments.0.user').to.eql (data.users[0]._id);
-        expect (data).to.have.deep.property ('comments.0.comment', 'This is comment number 1');
-        expect (data).to.have.deep.property ('comments.29.comment', 'This is comment number 30');
+        expect (data).to.have.deep.property ('comments.0.comment', 'This is comment number 2');
+        expect (data).to.have.deep.property ('comments.28.comment', 'This is comment number 30');
 
-        expect (data).to.have.deep.property ('comments.30.user').to.eql (data.users[1]._id);
-        expect (data).to.have.deep.property ('comments.30.comment', 'This is comment number 1');
-        expect (data).to.have.deep.property ('comments.79.comment', 'This is comment number 50');
+        expect (data).to.have.deep.property ('comments.29.user').to.eql (data.users[1]._id);
+        expect (data).to.have.deep.property ('comments.29.comment', 'This is comment number 2');
+        expect (data).to.have.deep.property ('comments.77.comment', 'This is comment number 50');
 
         return callback (null);
       }
