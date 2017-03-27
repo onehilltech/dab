@@ -2,10 +2,11 @@
 
 var exports = module.exports = {};
 
-exports.ref = require ('./ref');
+exports.get = require ('./get');
 exports.computed = require ('./computed');
-exports.times = require ('./times');
 exports.concat = require ('./concat');
 exports.filter = require ('./filter');
+exports.ref = require ('./ref');
 exports.shuffle = require ('./shuffle');
-exports.get = require ('./get');
+exports.sample = require ('./sample');
+exports.times = require ('./times');
