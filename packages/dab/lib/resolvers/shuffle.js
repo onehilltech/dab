@@ -1,13 +1,16 @@
 'use strict';
 
-const async     = require ('async')
-  , _           = require ('underscore')
-  , resolveThen = require ('./resolveThen')
+const async  = require ('async')
+  , _        = require ('underscore')
+  , evaluate = require ('./eval')
   ;
 
 function shuffle (values) {
   return function __dabShuffle (data, opts, callback) {
-    resolveThen (values, data, opts, function (result, callback) {
+    evaluate (values, data, opts, function (err, result) {
+      if (err)
+        return callback (err);
+
       return callback (null, _.shuffle (result));
     }, callback);
   }
