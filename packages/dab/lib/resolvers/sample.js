@@ -1,20 +1,15 @@
 'use strict';
 
-const async = require ('async')
-  , _       = require ('underscore')
-  , resolve = require ('../pass/resolve')
+const async     = require ('async')
+  , _           = require ('underscore')
+  , resolveThen = require ('./resolveThen')
   ;
 
 function sample (values, n) {
   return function __dabSample (data, opts, callback) {
-    async.waterfall ([
-      async.constant (values),
-      resolve (opts, data),
-
-      function (result, callback) {
-        return callback (null, _.sample (result, n));
-      }
-    ], callback);
+    resolveThen (values, data, opts, function (result, callback) {
+      return callback (null, _.sample (result, n));
+    }, callback);
   }
 }
 

@@ -6,27 +6,27 @@ const expect = require ('chai').expect
 
 describe ('lib.build', function () {
   it ('should build a data model', function (done) {
-    function computeEmail (data, opts, callback) {
-      var email = this.first_name.toLowerCase() + '.' + this.last_name.toLowerCase() + '@tester.com';
-      return callback (null, email)
+    function computeEmail (value, opts, callback) {
+      const email = value.first_name.toLowerCase () + '.' + value.last_name.toLowerCase () + '@tester.com';
+      return callback (null, email);
     }
 
-    function computeComment (user) {
-      var i = user;
+    function computeComment (i, opts, callback) {
+      const user = dab.ref (dab.sample (this.get ('users')));
+      const comment = 'This is comment number ' + (i + 1);
 
-      return function __computeComment (data, opts, callback) {
-        const user = dab.get ('users.' + i + '._id');
-        const comment = 'This is comment number ' + (this.index + 1);
+      return callback (null, {user: user, comment: comment});
+    }
 
-        return callback (null, {user: user, comment: comment});
-      }
+    function filterComment (value, opts, callback) {
+      return callback (null, value.comment !== 'This is comment number 1');
     }
 
     var data = {
-      users: [
-        {first_name: 'James', last_name: 'Hill', email: dab.computed (computeEmail)},
-        {first_name: 'Lewis', last_name: 'Williams', email: dab.computed (computeEmail)}
-      ],
+      users: dab.map ([
+        {first_name: 'James', last_name: 'Hill'},
+        {first_name: 'Lewis', last_name: 'Williams'}
+      ], computeEmail),
 
       friendships: [
         {src: dab.ref ('users.0'), dst: dab.ref ('users.1')}
@@ -37,11 +37,9 @@ describe ('lib.build', function () {
       }),
 
       comments: dab.filter (dab.concat (
-        dab.times (30, computeComment (0)),
-        dab.times (50, computeComment (1))
-      ), function (value, data, opts, callback) {
-        return callback (null, value.comment !== 'This is comment number 1');
-      }),
+        dab.times (30, computeComment),
+        dab.times (50, computeComment)
+      ), filterComment),
 
       shuffled: dab.shuffle (dab.get ('comments')),
       samples: dab.sample (dab.get ('comments'), 5)

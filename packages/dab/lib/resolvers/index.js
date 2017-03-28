@@ -11,3 +11,4 @@ exports.ref = require ('./ref');
 exports.shuffle = require ('./shuffle');
 exports.sample = require ('./sample');
 exports.times = require ('./times');
+exports.resolveThen = require ('./resolveThen');
