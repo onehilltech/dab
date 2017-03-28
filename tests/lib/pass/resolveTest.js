@@ -40,17 +40,16 @@ describe ('lib.pass.resolve', function () {
         dab.times (50, computeComment)
       ),
 
-      //shuffled: dab.shuffle (dab.get ('comments')),
+      shuffled: dab.shuffle (dab.get ('comments')),
       samples: dab.sample (dab.get ('comments'), 5),
 
-      /*
       mapped: dab.map ([1, 2], function (value, opts, callback) {
         return callback (null, value * 2);
       }),
 
       mappedObj: dab.map ({first_name: 'John', last_name: 'Doe'}, function (value, key, opts, callback) {
         return callback (null, value.toLowerCase ());
-      })*/
+      })
     };
 
     async.waterfall ([
