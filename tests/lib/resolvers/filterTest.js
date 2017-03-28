@@ -12,7 +12,7 @@ describe ('lib.resolvers.filter', function () {
 
     async.waterfall ([
       function (callback) {
-        filter (data, function (value, data, opts, callback) {
+        filter (data, function (value, opts, callback) {
           return callback (null, value !== 1);
         }).call (null, data, opts, callback);
       },

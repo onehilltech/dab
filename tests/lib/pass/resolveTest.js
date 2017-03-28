@@ -7,58 +7,55 @@ const expect = require ('chai').expect
 
 
 describe ('lib.pass.resolve', function () {
-  it ('should generate ids for all entries in the data model', function (done) {
-    function computeEmail (data, opts, callback) {
-      var email = this.first_name.toLowerCase () + '.' + this.last_name.toLowerCase () + '@tester.com';
-      return callback (null, email)
+  it ('should resolve all values', function (done) {
+
+    function computeEmail (value, opts, callback) {
+      value.email = value.first_name.toLowerCase () + '.' + value.last_name.toLowerCase () + '@tester.com';
+      return callback (null, value)
     }
 
-    function computeComment (user) {
-      var i = user;
+    function computeComment (n, opts, callback) {
+      const user = dab.ref (dab.sample (dab.get ('users')));
+      const comment = 'This is comment number ' + (n + 1);
 
-      return function __computeComment (data, opts, callback) {
-        const user = dab.get ('users.' + i + '._id');
-        const comment = 'This is comment number ' + (this.index + 1);
-
-        return callback (null, {user: user, comment: comment});
-      }
+      return callback (null, {user: user, comment: comment});
     }
 
     var data = {
-      users: [
-        {_id: new ObjectId (), first_name: 'James', last_name: 'Hill', email: dab.computed (computeEmail)},
-        {_id: new ObjectId (), first_name: 'Lewis', last_name: 'Williams', email: dab.computed (computeEmail)}
-      ],
+      users: dab.map ([
+        {_id: new ObjectId (), first_name: 'James', last_name: 'Hill'},
+        {_id: new ObjectId (), first_name: 'Lewis', last_name: 'Williams'}
+      ], computeEmail),
 
       friendships: [
         {_id: new ObjectId (), src: dab.ref ('users.0'), dst: dab.ref ('users.1')}
       ],
-      
-      organizations: dab.times (2, function (data, opts, callback) {
-        return callback (null, {name: 'Organization' + this.index, owner: dab.ref ('users.0')});
+
+      organizations: dab.times (2, function (n, opts, callback) {
+        return callback (null, {name: 'Organization' + n, owner: dab.ref ('users.0')});
       }),
 
-      comments: dab.filter (dab.concat (
-        dab.times (30, computeComment (0)),
-        dab.times (50, computeComment (1))
-      ), function (value, data, opts, callback) {
-        return callback (null, value.comment !== 'This is comment number 1');
-      }),
+      comments: dab.concat (
+        dab.times (30, computeComment),
+        dab.times (50, computeComment)
+      ),
 
-      shuffled: dab.shuffle (dab.get ('comments')),
+      //shuffled: dab.shuffle (dab.get ('comments')),
       samples: dab.sample (dab.get ('comments'), 5),
 
-      mapped: dab.map ([1, 2], function (item, data, opts, callback) {
-        return callback (null, item * 2);
+      /*
+      mapped: dab.map ([1, 2], function (value, opts, callback) {
+        return callback (null, value * 2);
       }),
 
-      mappedObj: dab.map ({first_name: 'John', last_name: 'Doe'}, function (item, data, opts, callback) {
-        return callback (null, item.toLowerCase ());
-      })
+      mappedObj: dab.map ({first_name: 'John', last_name: 'Doe'}, function (value, key, opts, callback) {
+        return callback (null, value.toLowerCase ());
+      })*/
     };
 
     async.waterfall ([
       async.constant (data),
+      resolve ({id: '_id'}),
       resolve ({id: '_id'}),
 
       function (data, callback) {
@@ -75,14 +72,14 @@ describe ('lib.pass.resolve', function () {
         expect (data).to.have.deep.property ('organizations.1.name', 'Organization1');
         expect (data).to.have.deep.property ('organizations.1.owner').to.eql (data.users[0]._id);
 
-        expect (data.comments).to.have.length (78);
-        expect (data).to.have.deep.property ('comments.0.user').to.eql (data.users[0]._id);
-        expect (data).to.have.deep.property ('comments.0.comment', 'This is comment number 2');
-        expect (data).to.have.deep.property ('comments.28.comment', 'This is comment number 30');
+        expect (data.comments).to.have.length (80);
+        expect (data).to.have.deep.property ('comments.0.user').to.be.instanceof (ObjectId);
+        expect (data).to.have.deep.property ('comments.0.comment', 'This is comment number 1');
+        expect (data).to.have.deep.property ('comments.29.comment', 'This is comment number 30');
 
-        expect (data).to.have.deep.property ('comments.29.user').to.eql (data.users[1]._id);
-        expect (data).to.have.deep.property ('comments.29.comment', 'This is comment number 2');
-        expect (data).to.have.deep.property ('comments.77.comment', 'This is comment number 50');
+        expect (data).to.have.deep.property ('comments.30.user').to.be.instanceof (ObjectId);
+        expect (data).to.have.deep.property ('comments.30.comment', 'This is comment number 1');
+        expect (data).to.have.deep.property ('comments.79.comment', 'This is comment number 50');
 
         expect (data.samples).to.have.length (5);
 
