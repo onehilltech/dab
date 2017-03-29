@@ -7,18 +7,6 @@ const expect = require ('chai').expect
 
 
 describe ('lib.phase.resolve', function () {
-  function computeEmail (value, opts, callback) {
-    value.email = value.first_name.toLowerCase () + '.' + value.last_name.toLowerCase () + '@tester.com';
-    return callback (null, value)
-  }
-
-  function computeComment (n, opts, callback) {
-    const user = dab.ref (dab.sample (dab.get ('users')));
-    const comment = 'This is comment number ' + (n + 1);
-
-    return callback (null, {user: user, comment: comment});
-  }
-
   it ('should resolve a scalar property', function (done) {
     var data = {
       users: [
@@ -79,11 +67,6 @@ describe ('lib.phase.resolve', function () {
 
   it ('should resolve a top-level function composition', function (done) {
     var data = {
-      users: [
-        {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
-        {_id: ObjectId (), first_name: 'John', last_name: 'Doe'}
-      ],
-
       mapped: dab.map (
         dab.times (5, function (i, opts, callback) {
           return callback (null, {username: 'username' + i});
