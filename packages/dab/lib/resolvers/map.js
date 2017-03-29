@@ -3,6 +3,7 @@
 const async  = require ('async')
   , _        = require ('underscore')
   , evaluate = require ('./eval')
+  , debug    = require ('debug') ('dab.map')
 ;
 
 function map (values, func) {
@@ -12,11 +13,15 @@ function map (values, func) {
         return callback (err);
 
       if (_.isArray (result)) {
+        debug ('mapping an array of values (size=' + result.length + ')');
+
         async.map (result, function (value, callback) {
           func.call (data, value, opts, callback);
         }, callback);
       }
       else if (_.isObject (result) && result.constructor === Object) {
+        debug ('mapping an object (size=' + Object.keys (result).length + ')');
+
         async.mapValues (values, function (value, key, callback) {
           func.call (data, value, key, opts, callback);
         }, callback);
