@@ -1,8 +1,8 @@
 'use strict';
 
 const async     = require ('async')
-  , generateIds = require ('./pass/generateIds')
-  , resolve     = require ('./pass/resolve')
+  , generateIds = require ('./phase/generateIds')
+  , resolve     = require ('./phase/resolve')
   ;
 
 function build (data, opts, callback) {

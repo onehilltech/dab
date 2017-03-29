@@ -1,10 +1,10 @@
 const expect = require ('chai').expect
-  , genIds   = require ('../../../lib/pass/generateIds')
+  , genIds   = require ('../../../lib/phase/generateIds')
   , async    = require ('async')
   , ObjectId = require ('mongoose').Types.ObjectId
   ;
 
-describe ('lib.pass.generateIds', function () {
+describe ('lib.phase.generateIds', function () {
   it ('should generate ids for all entries in the data model', function (done) {
     var data = {
       persons: [

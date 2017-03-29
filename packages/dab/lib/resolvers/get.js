@@ -1,9 +1,19 @@
 'use strict';
 
+const _ = require ('underscore')
+  ;
+
 function get (path) {
   return function __dabGet (data, opts, callback) {
-    const value = data.get (path);
-    return callback (null, value);
+    var value = data.get (path);
+
+    // If the result of get is a function, then that means the value has not
+    // be resolved up to this point. We need to return undefined so the resolver
+    // can include this this in the unresolved set.
+    if (_.isFunction (value))
+      value = undefined;
+
+    callback (null, value);
   }
 }
 

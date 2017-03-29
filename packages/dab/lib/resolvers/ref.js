@@ -10,6 +10,9 @@ function ref (value) {
       if (err)
         return callback (err);
 
+      if (result === undefined)
+        return callback (null, undefined);
+
       if (_.isString (result)) {
         const idPath = result + '.' + (opts.id || '_id');
         const id = data.get (idPath);
