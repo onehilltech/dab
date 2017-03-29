@@ -133,3 +133,4 @@ crashlytics-build.properties
 fabric.properties
 !/lib/resolvers/map.js
 !/lib/resolvers/times.js
+!/lib/phase/resolve.js
