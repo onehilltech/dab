@@ -1,93 +1,164 @@
 const expect = require ('chai').expect
-  , resolve  = require ('../../../lib/pass/resolve')
+  , resolve  = require ('../../../lib/phase/resolve')
   , async    = require ('async')
   , ObjectId = require ('mongoose').Types.ObjectId
   , dab      = require ('../../../lib')
   ;
 
 
-describe ('lib.pass.resolve', function () {
-  it ('should resolve all values', function (done) {
+describe ('lib.phase.resolve', function () {
+  function computeEmail (value, opts, callback) {
+    value.email = value.first_name.toLowerCase () + '.' + value.last_name.toLowerCase () + '@tester.com';
+    return callback (null, value)
+  }
 
-    function computeEmail (value, opts, callback) {
-      value.email = value.first_name.toLowerCase () + '.' + value.last_name.toLowerCase () + '@tester.com';
-      return callback (null, value)
-    }
+  function computeComment (n, opts, callback) {
+    const user = dab.ref (dab.sample (dab.get ('users')));
+    const comment = 'This is comment number ' + (n + 1);
 
-    function computeComment (n, opts, callback) {
-      const user = dab.ref (dab.sample (dab.get ('users')));
-      const comment = 'This is comment number ' + (n + 1);
+    return callback (null, {user: user, comment: comment});
+  }
 
-      return callback (null, {user: user, comment: comment});
-    }
-
+  it ('should resolve a scalar property', function (done) {
     var data = {
-      users: dab.map ([
-        {_id: new ObjectId (), first_name: 'James', last_name: 'Hill'},
-        {_id: new ObjectId (), first_name: 'Lewis', last_name: 'Williams'}
-      ], computeEmail),
-
-      friendships: [
-        {_id: new ObjectId (), src: dab.ref ('users.0'), dst: dab.ref ('users.1')}
+      users: [
+        {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
+        {_id: ObjectId (), first_name: 'John', last_name: 'Doe'}
       ],
 
-      organizations: dab.times (2, function (n, opts, callback) {
-        return callback (null, {name: 'Organization' + n, owner: dab.ref ('users.0')});
-      }),
+      comments: [
+        {_id: ObjectId (), user: dab.ref ('users.0'), comment: 'This is a simple comment'}
+      ]
+    };
 
-      comments: dab.concat (
-        dab.times (30, computeComment),
-        dab.times (50, computeComment)
-      ),
+    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+      if (err)
+        return done (err);
 
-      shuffled: dab.shuffle (dab.get ('comments')),
-      samples: dab.sample (dab.get ('comments'), 5),
+      expect (result).to.have.deep.property ('comments.0.user').to.eql (result.users[0]._id);
+      expect (unresolved).to.equal (0);
 
-      mapped: dab.map ([1, 2], function (value, opts, callback) {
-        return callback (null, value * 2);
-      }),
+      return done (null);
+    });
+  });
 
-      mappedObj: dab.map ({first_name: 'John', last_name: 'Doe'}, function (value, key, opts, callback) {
-        return callback (null, value.toLowerCase ());
+  it ('should resolve an array property', function (done) {
+    var data = {
+      users: [
+        {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
+        {_id: ObjectId (), first_name: 'John', last_name: 'Doe'}
+      ],
+
+      comments: dab.times (5, function (i, opts, callback) {
+        return callback (null, {_id: ObjectId ()})
       })
     };
 
-    async.waterfall ([
-      async.constant (data),
-      resolve ({id: '_id'}),
-      resolve ({id: '_id'}),
+    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+      if (err)
+        return done (err);
 
-      function (data, callback) {
-        expect (data.friendships[0].src).to.eql (data.users[0]._id);
-        expect (data.friendships[0].dst).to.eql (data.users[1]._id);
+      expect (result.comments).to.have.length (5);
+      expect (unresolved).to.equal (0);
 
-        expect (data).to.have.deep.property ('users.0.email', 'james.hill@tester.com');
-        expect (data).to.have.deep.property ('users.1.email', 'lewis.williams@tester.com');
+      return done (null);
+    });
+  });
 
-        expect (data.organizations).to.have.length (2);
-        expect (data).to.have.deep.property ('organizations.0.name', 'Organization0');
-        expect (data).to.have.deep.property ('organizations.0.owner').to.eql (data.users[0]._id);
+  it ('should resolve a static value', function (done) {
+    resolve ({id: '_id'}) ('static-value', function (err, result, unresolved) {
+      if (err)
+        return done (err);
 
-        expect (data).to.have.deep.property ('organizations.1.name', 'Organization1');
-        expect (data).to.have.deep.property ('organizations.1.owner').to.eql (data.users[0]._id);
+      expect (result).to.equal ('static-value');
+      expect (unresolved).to.equal (0);
 
-        expect (data.comments).to.have.length (80);
-        expect (data).to.have.deep.property ('comments.0.user').to.be.instanceof (ObjectId);
-        expect (data).to.have.deep.property ('comments.0.comment', 'This is comment number 1');
-        expect (data).to.have.deep.property ('comments.29.comment', 'This is comment number 30');
+      return done (null);
+    });
+  });
 
-        expect (data).to.have.deep.property ('comments.30.user').to.be.instanceof (ObjectId);
-        expect (data).to.have.deep.property ('comments.30.comment', 'This is comment number 1');
-        expect (data).to.have.deep.property ('comments.79.comment', 'This is comment number 50');
+  it ('should resolve a top-level function composition', function (done) {
+    var data = {
+      users: [
+        {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
+        {_id: ObjectId (), first_name: 'John', last_name: 'Doe'}
+      ],
 
-        expect (data.samples).to.have.length (5);
+      mapped: dab.map (
+        dab.times (5, function (i, opts, callback) {
+          return callback (null, {username: 'username' + i});
+        }),
+        function (value, opts, callback) {
+          value.password = value.username;
+          return callback (null, value);
+        })
+    };
 
-        // test the map function
-        expect (data.mapped).to.eql ([2, 4]);
-        expect (data.mappedObj).to.eql ({first_name: 'john', last_name: 'doe'});
+    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+      if (err)
+        return done (err);
 
-        return callback (null);
+      expect (unresolved).to.equal (0);
+      expect (result.mapped).to.have.length (5);
+
+      for (var i = 0; i < 5; ++ i)
+        expect (result.mapped[i].username).to.equal (result.mapped[i].password);
+
+      return done (null);
+    });
+  });
+
+  it ('should have unresolved values', function (done) {
+    var data = {
+      values: dab.times (5, function (i, opts, callback) {
+        return callback (null, {value: i})
+      }),
+
+      mapped: dab.map (dab.get ('values'), function (item, opts, callback) {
+        item.times3 = item.value * 3;
+        return callback (null, item);
+      })
+    };
+
+    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+      if (err)
+        return done (err);
+
+      expect (unresolved).to.equal (1);
+      expect (result.mapped).to.be.a.function;
+      expect (result.mapped.name).to.equal ('__dabMap');
+
+      return done (null);
+    });
+  });
+
+  it ('should have unresolved values because of nested resolvers', function (done) {
+    var data = {
+      users: dab.times (5, function (i, opts, callback) {
+        return callback (null, {_id: new ObjectId (), username: 'username' + i})
+      }),
+
+      comments: dab.times (5, function (i, opts, callback) {
+        var user = dab.ref (dab.sample (dab.get ('users')));
+        var value = {user: user, comment: 'This is comment #' + i};
+
+        return callback (null, value);
+      })
+    };
+
+    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+      if (err)
+        return done (err);
+
+      expect (unresolved).to.equal (5);
+      expect (result.comments).to.have.length (5);
+
+      for (var i = 0; i < 5; ++ i) {
+        expect (result.comments[i].user).to.be.a.function;
+        expect (result.comments[i].user.name).to.equal ('__dabRef');
       }
-    ], done);
+
+      return done (null);
+    });
   });
 });
