@@ -120,11 +120,11 @@ describe ('lib.phase.resolve', function () {
 
   it ('should have unresolved values because of nested resolvers', function (done) {
     var data = {
-      users: dab.times (5, function (i, opts, callback) {
+      users: dab.times (2, function (i, opts, callback) {
         return callback (null, {_id: new ObjectId (), username: 'username' + i})
       }),
 
-      comments: dab.times (5, function (i, opts, callback) {
+      comments: dab.times (2, function (i, opts, callback) {
         var user = dab.ref (dab.sample (dab.get ('users')));
         var value = {user: user, comment: 'This is comment #' + i};
 
@@ -137,13 +137,12 @@ describe ('lib.phase.resolve', function () {
       if (err)
         return done (err);
 
-      expect (unresolved).to.equal (5);
-      expect (result.comments).to.have.length (5);
+      expect (unresolved).to.have.keys (['comments.0.user', 'comments.1.user']);
 
-      for (var i = 0; i < 5; ++ i) {
-        expect (result.comments[i].user).to.be.a.function;
-        expect (result.comments[i].user.name).to.equal ('__dabRef');
-      }
+      expect (result).to.have.deep.property ('comments.0.user').that.is.undefined;
+      expect (result).to.have.deep.property ('comments.1.user').that.is.undefined;
+
+      expect (result.comments).to.have.length (2);
 
       return done (null);
     });
