@@ -43,7 +43,8 @@ Resolver.prototype.resolve = function (value, callback) {
       if (err)
         return callback (err);
 
-      this._unresolved = _.extend (this._unresolved, child.unresolved);
+      if (!_.isEmpty (child.unresolved))
+        this._unresolved = _.extend (this._unresolved, child.unresolved);
 
       if (result === undefined)
         this._unresolved[child.path] = value;
