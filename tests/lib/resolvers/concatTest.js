@@ -7,12 +7,15 @@ const expect = require ('chai').expect
 
 describe ('lib.resolvers.concat', function () {
   it ('should concatenate list of arrays', function (done) {
-    var data = {};
-    var opts = {};
+    var context = {
+      resolve: function (values, callback) {
+        return callback (null, values);
+      }
+    };
 
     async.waterfall ([
       function (callback) {
-        concat ([1, 2], [3, 4]).call (null, data, opts, callback);
+        concat.call (context, [1, 2], [3, 4]) (callback);
       },
 
       function (data, callback) {
