@@ -2,7 +2,6 @@
 
 const async  = require ('async')
   , _        = require ('underscore')
-  , evaluate = require ('./eval')
   , debug    = require ('debug') ('dab.map')
 ;
 

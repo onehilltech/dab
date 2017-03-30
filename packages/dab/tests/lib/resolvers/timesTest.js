@@ -7,8 +7,11 @@ const expect = require ('chai').expect
 
 describe ('lib.resolvers.times', function () {
   it ('should generate 5 users', function (done) {
-    var data = {};
-    var opts = {};
+    var context = {
+      resolve: function (values, callback) {
+        return callback (null, values);
+      }
+    };
 
     function computeEmail (i, opts, callback) {
       const email = 'tester' + i + '@no-reply.com';
@@ -17,7 +20,7 @@ describe ('lib.resolvers.times', function () {
 
     async.waterfall ([
       function (callback) {
-        times (5, computeEmail).call (null, data, opts, callback);
+        times.call (context, 5, computeEmail) (callback);
       },
 
       function (data, callback) {
