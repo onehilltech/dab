@@ -7,7 +7,7 @@ const expect = require ('chai').expect
 
 
 describe ('lib.phase.resolve', function () {
-  it ('should resolve a scalar property', function (done) {
+  it ('should a property in an object', function (done) {
     var data = {
       users: [
         {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
@@ -24,13 +24,13 @@ describe ('lib.phase.resolve', function () {
         return done (err);
 
       expect (result).to.have.deep.property ('comments.0.user').to.eql (result.users[0]._id);
-      expect (unresolved).to.equal (0);
+      expect (unresolved).to.eql ({});
 
       return done (null);
     });
   });
 
-  it ('should resolve an array property', function (done) {
+  it ('should resolve a function that generates an array', function (done) {
     var data = {
       users: [
         {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
@@ -47,7 +47,7 @@ describe ('lib.phase.resolve', function () {
         return done (err);
 
       expect (result.comments).to.have.length (5);
-      expect (unresolved).to.equal (0);
+      expect (unresolved).to.eql ({});
 
       return done (null);
     });
@@ -59,13 +59,13 @@ describe ('lib.phase.resolve', function () {
         return done (err);
 
       expect (result).to.equal ('static-value');
-      expect (unresolved).to.equal (0);
+      expect (unresolved).to.eql ({});
 
       return done (null);
     });
   });
 
-  it ('should resolve a top-level function composition', function (done) {
+  it ('should resolve function composition', function (done) {
     var data = {
       mapped: dab.map (
         dab.times (5, function (i, opts, callback) {
@@ -81,7 +81,7 @@ describe ('lib.phase.resolve', function () {
       if (err)
         return done (err);
 
-      expect (unresolved).to.equal (0);
+      expect (unresolved).to.eql ({});
       expect (result.mapped).to.have.length (5);
 
       for (var i = 0; i < 5; ++ i)
@@ -103,13 +103,16 @@ describe ('lib.phase.resolve', function () {
       })
     };
 
-    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+    var resolveFun = resolve ({id: '_id'});
+    resolveFun (data, function (err, result, unresolved) {
       if (err)
         return done (err);
 
-      expect (unresolved).to.equal (1);
-      expect (result.mapped).to.be.a.function;
-      expect (result.mapped.name).to.equal ('__dabMap');
+      expect (unresolved).to.have.keys (['mapped']);
+      expect (unresolved).to.have.property ('mapped').that.is.a.function;
+      expect (unresolved).to.have.deep.property ('mapped.name', '__dabMap');
+
+      expect (result.mapped).to.be.undefined;
 
       return done (null);
     });
@@ -129,7 +132,8 @@ describe ('lib.phase.resolve', function () {
       })
     };
 
-    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+    var resolveFunc = resolve ({id: '_id'});
+    resolveFunc (data, function (err, result, unresolved) {
       if (err)
         return done (err);
 

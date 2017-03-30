@@ -5,7 +5,7 @@ const _     = require ('underscore')
   , resolve = require ('../phase/resolve')
   ;
 
-function evaluate (value, data, opts, callback) {
+function evaluate (value, callback) {
   process.nextTick (function () {
     async.waterfall ([
       async.constant (value),
@@ -14,7 +14,7 @@ function evaluate (value, data, opts, callback) {
         // The value was not resolved, so we need to return undefined to the
         // caller. This will let them know we need another iteration.
         if (unresolved)
-          return callback (null, undefined);
+           return callback (null, undefined);
 
         // We have a result, or we have a function that we need to evaluate.
         if (!_.isFunction (result))
