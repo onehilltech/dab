@@ -8,13 +8,18 @@ const expect = require ('chai').expect
 describe ('lib.resolvers.filter', function () {
   it ('should filter values from the data', function (done) {
     var data = [1, 2, 3, 5, 6];
-    var opts = {};
+
+    var context = {
+      resolve: function (values, callback) {
+        return callback (null, values);
+      }
+    };
 
     async.waterfall ([
       function (callback) {
-        filter (data, function (value, opts, callback) {
+        filter.call (context, data, function (value, opts, callback) {
           return callback (null, value !== 1);
-        }).call (null, data, opts, callback);
+        }) (callback);
       },
 
       function (data, callback) {
