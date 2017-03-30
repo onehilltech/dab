@@ -33,8 +33,7 @@ Builder.prototype.build = function (callback) {
 
       async.waterfall ([
         async.constant (this._intermediate),
-        generateIds (this._opts),
-        resolve (this._opts),
+        resolve (this._opts, this._intermediate),
 
         function (result, unresolved, callback) {
           this._unresolved = unresolved;
@@ -61,7 +60,7 @@ Builder.prototype.build = function (callback) {
     }.bind (this),
 
     function () {
-      return this._unresolved === 0;
+      return !_.isEmpty (this._unresolved);
     }.bind (this),
     callback);
 };
