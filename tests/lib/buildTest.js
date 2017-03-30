@@ -7,11 +7,10 @@ const expect = require ('chai').expect
   ;
 
 describe ('lib.build', function () {
-  it ('should build a model with simple resolvers', function (done) {
+  it ('should generate on objects (before)', function (done) {
     var data = {
       users: [
-        {first_name: 'Jane', last_name: 'Doe'},
-        {first_name: 'John', last_name: 'Doe'}
+        {first_name: 'Jane', last_name: 'Doe'}
       ],
 
       comments: [
@@ -24,7 +23,31 @@ describe ('lib.build', function () {
         return done (err);
 
       expect (result).to.have.deep.property ('users[0]._id').that.is.instanceof (ObjectId);
-      expect (result).to.have.deep.property ('users[1]._id').that.is.instanceof (ObjectId);
+
+      expect (result.comments).to.have.length (1);
+      expect (result).to.have.deep.property ('comments[0]._id').that.is.instanceof (ObjectId);
+      expect (result).to.have.deep.property ('comments[0].user').that.eql (result.users[0]._id);
+
+      return done (null);
+    });
+  });
+
+  it ('should generate on objects (after)', function (done) {
+    var data = {
+      comments: [
+        {user: dab.ref ('users.0'), comment: 'This is a simple comment'}
+      ],
+
+      users: [
+        {first_name: 'Jane', last_name: 'Doe'}
+      ]
+    };
+
+    build (data, function (err, result) {
+      if (err)
+        return done (err);
+
+      expect (result).to.have.deep.property ('users[0]._id').that.is.instanceof (ObjectId);
 
       expect (result.comments).to.have.length (1);
       expect (result).to.have.deep.property ('comments[0]._id').that.is.instanceof (ObjectId);
