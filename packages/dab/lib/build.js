@@ -111,36 +111,6 @@ Builder.prototype.build = function (callback) {
         callback);
     }.bind (this)
   ], callback);
-
-  async.waterfall ([
-    function (callback) {
-    }.bind (this),
-
-    function (result, unresolved, callback) {
-      if (_.isEmpty (unresolved))
-        return callback (null, result);
-
-      // Attempt to resolve the unresolved values.
-      this._unresolved = unresolved;
-      this._intermediate = result;
-
-      async.doUntil (
-        function (callback) {
-          // Move to the next iteration
-          ++ this._iteration;
-
-          async.eachOf (this._unresolved, function (item, key, callback) {
-
-          });
-        }.bind (this),
-
-        function () {
-          return _.isEmpty (this._unresolved) || this._iteration >= this._maxIters;
-        }.bind (this),
-
-        callback);
-    }.bind (this)
-  ], callback);
 };
 
 /**
