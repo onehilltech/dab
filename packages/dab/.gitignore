@@ -131,6 +131,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-!/lib/resolvers/map.js
-!/lib/resolvers/times.js
-!/lib/phase/resolve.js
