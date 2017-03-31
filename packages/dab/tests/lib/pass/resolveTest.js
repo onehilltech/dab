@@ -19,7 +19,7 @@ describe ('lib.phase.resolve', function () {
       ]
     };
 
-    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+    resolve (data, data, function (err, result, unresolved) {
       if (err)
         return done (err);
 
@@ -42,7 +42,7 @@ describe ('lib.phase.resolve', function () {
       })
     };
 
-    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+    resolve (data, data, function (err, result, unresolved) {
       if (err)
         return done (err);
 
@@ -54,7 +54,7 @@ describe ('lib.phase.resolve', function () {
   });
 
   it ('should resolve a static value', function (done) {
-    resolve ({id: '_id'}) ('static-value', function (err, result, unresolved) {
+    resolve ('static-value', {}, function (err, result, unresolved) {
       if (err)
         return done (err);
 
@@ -77,7 +77,7 @@ describe ('lib.phase.resolve', function () {
         })
     };
 
-    resolve ({id: '_id'}) (data, function (err, result, unresolved) {
+    resolve (data, data, function (err, result, unresolved) {
       if (err)
         return done (err);
 
@@ -103,8 +103,7 @@ describe ('lib.phase.resolve', function () {
       })
     };
 
-    var resolveFun = resolve ({id: '_id'});
-    resolveFun (data, function (err, result, unresolved) {
+    resolve (data, data, function (err, result, unresolved) {
       if (err)
         return done (err);
 
@@ -132,8 +131,7 @@ describe ('lib.phase.resolve', function () {
       })
     };
 
-    var resolveFunc = resolve ({id: '_id'});
-    resolveFunc (data, function (err, result, unresolved) {
+    resolve (data, data, function (err, result, unresolved) {
       if (err)
         return done (err);
 

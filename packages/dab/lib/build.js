@@ -1,9 +1,9 @@
 'use strict';
 
 const async     = require ('async')
-  , generateIds = require ('./phase/generateIds')
   , resolve     = require ('./phase/resolve')
   , _           = require ('underscore')
+  , objectPath  = require ('object-path')
   , debug       = require ('debug') ('dab:build')
   , util        = require ('util')
   ;
@@ -27,42 +27,120 @@ function Builder (data, opts) {
  * @param callback
  */
 Builder.prototype.build = function (callback) {
-  async.doWhilst (
+  async.waterfall ([
+    /*
+     * Run the first loop, which will let us know how we fared.
+     */
     function (callback) {
-      debug ('building model (iteration ' + this._iteration + ')');
+      resolve (this._intermediate, this._intermediate, this._opts, callback);
+    }.bind (this),
 
-      async.waterfall ([
-        async.constant (this._intermediate),
-        resolve (this._opts, this._intermediate),
+    /*
+     * Resolve all the unresolved values.
+     */
+    function (result, unresolved, callback) {
+      if (_.isEmpty (unresolved))
+        return callback (null, result);
 
-        function (result, unresolved, callback) {
-          this._unresolved = unresolved;
+      ++ this._iteration;
 
-          if (!_.isEmpty (unresolved)) {
-            // Set the current result as the data for the next iteration.
-            debug ('unresolved references: ' + unresolved);
-            debug ('intermediate: ' + util.inspect (result));
+      if (this._iteration >= this._maxIters)
+        return callback (new Error ('reached max iterations'));
 
-            this._intermediate = result;
+      // Prepare to resolve the unresolved.
+      this._intermediate = result;
+      this._unresolved = unresolved;
+
+      async.doUntil (
+        /*
+         * Resolve the unresolved values.
+         */
+        function (callback) {
+          function nextIter (callback) {
+            return function (err) {
+              if (err)
+                return callback (err);
+
+              // Advance to the next iteration.
+              ++ this._iteration;
+
+              // We always return the intermediate result.
+              return callback (null, this._intermediate);
+            }.bind (this);
           }
 
+          async.eachOf (
+            // The values we want to resolve. If things start to fail, we may have
+            // to clone the unresolved hash before iterating over it.
+            this._unresolved,
+
+            function (item, key, callback) {
+              async.waterfall ([
+                /*
+                 * Function that performs the resolve.
+                 */
+                function (callback) {
+                  resolve (item, this._intermediate, this._opts, callback);
+                }.bind (this),
+
+                /*
+                 * Function that handles the resolved value.
+                 */
+                function (result, unresolved, callback) {
+                  if (result) {
+                    objectPath.set (this._intermediate, key, result);
+                    delete this._unresolved[key];
+                  }
+                  else if (!_.isEmpty (unresolved)) {
+                    this._unresolved = _.merge (this._unresolved, unresolved);
+                  }
+
+                  return callback (null);
+                }.bind (this)
+              ], callback);
+            }.bind (this),
+            nextIter.call (this, callback));
+        }.bind (this),
+
+        /*
+         * Check if we need to loop again.
+         */
+        function () {
+          return _.isEmpty (this._unresolved) || this._iteration >= this._maxIters;
+        }.bind (this),
+        callback);
+    }.bind (this)
+  ], callback);
+
+  async.waterfall ([
+    function (callback) {
+    }.bind (this),
+
+    function (result, unresolved, callback) {
+      if (_.isEmpty (unresolved))
+        return callback (null, result);
+
+      // Attempt to resolve the unresolved values.
+      this._unresolved = unresolved;
+      this._intermediate = result;
+
+      async.doUntil (
+        function (callback) {
           // Move to the next iteration
           ++ this._iteration;
 
-          if (this._iteration >= this._maxIters) {
-            debug ('intermediate: ' + util.inspect (result));
-            return callback (new Error ('reached max iterations'));
-          }
+          async.eachOf (this._unresolved, function (item, key, callback) {
 
-          return callback (null, result);
-        }.bind (this)
-      ], callback);
-    }.bind (this),
+          });
+        }.bind (this),
 
-    function () {
-      return !_.isEmpty (this._unresolved);
-    }.bind (this),
-    callback);
+        function () {
+          return _.isEmpty (this._unresolved) || this._iteration >= this._maxIters;
+        }.bind (this),
+
+        callback);
+    }.bind (this)
+  ], callback);
 };
 
 /**

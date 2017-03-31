@@ -116,4 +116,42 @@ describe ('lib.build', function () {
       }, done);
     });
   });
+
+  it ('should build a model with unresolved values', function (done) {
+    var data = {
+      users: dab.times (2, function (i, opts, callback) {
+        return callback (null, {name: 'User' + i});
+      }),
+
+      comments: dab.times (5, function (i, opts, callback) {
+        var user = dab.ref (dab.sample (dab.get ('users')));
+        var comment = {user: user, comment: 'This is comment ' + i};
+        return callback (null, comment);
+      })
+    };
+
+    build (data, function (err, result) {
+      if (err)
+        return done (err);
+
+      // check the users
+      expect (result.users).to.have.length (2);
+
+      for (var i = 0, stop = result.users.length; i < stop; ++ i) {
+        expect (result).to.have.deep.property ('users[' + i + ']._id').that.is.instanceof (ObjectId);
+        expect (result).to.have.deep.property ('users[' + i + '].name', 'User' + i);
+      }
+
+      // check the comments
+      expect (result.comments).to.have.length (5);
+
+      async.each (result.comments, function (item, callback) {
+        expect (item).to.have.deep.property ('user').that.is.instanceof (ObjectId);
+
+        async.some (result.users, function (user, callback) {
+          return callback (null, user._id.equals (item.user));
+        }, callback);
+      }, done);
+    });
+  });
 });
