@@ -10,7 +10,7 @@ describe ('lib.build', function () {
   it ('should generate on objects (before)', function (done) {
     var data = {
       users: [
-        {first_name: 'Jane', last_name: 'Doe'}
+        {_id: dab.id (), first_name: 'Jane', last_name: 'Doe'}
       ],
 
       comments: [
