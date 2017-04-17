@@ -5,7 +5,7 @@ const async  = require ('async')
 ;
 
 function omit (value, keys) {
-  return function __dabClone (callback) {
+  return function __dabOmit (callback) {
     this.resolve (value, function (err, result) {
       if (err)
         return callback (err);
