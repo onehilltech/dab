@@ -15,4 +15,6 @@ exports.ref = require ('./ref');
 exports.sample = require ('./sample');
 exports.shuffle = require ('./shuffle');
 exports.times = require ('./times');
+
 exports.string = require ('./string');
+exports.gridfs = require ('./gridfs');
