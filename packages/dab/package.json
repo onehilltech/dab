@@ -26,6 +26,7 @@
   "homepage": "https://github.com/onehilltech/dab",
   "dependencies": {
     "async": "^2.4.1",
+    "commander": "^2.9.0",
     "coveralls": "^2.13.1",
     "debug": "^2.6.8",
     "mocha": "^3.4.2",
