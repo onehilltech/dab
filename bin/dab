@@ -1,32 +1,9 @@
 #!/usr/bin/env node
-
 'use strict';
 
-const async = require ('async')
-  , path    = require ('path')
-  , debug   = require ('debug')('dab:bin:dab')
-  , dab     = require ('../lib')
-  ;
+const program = require ('commander');
 
-var filename = path.resolve (process.argv[2]);
-debug ('dabbing using ' + filename);
-
-// Load the dab file.
-var data = require (filename);
-
-function complete (err) {
-  if (err)
-    return console.log (err);
-}
-
-async.waterfall ([
-  function (callback) {
-    dab.build (data, callback);
-  },
-
-  function (models, callback) {
-    console.log (JSON.stringify (models));
-    return callback (null);
-  }
-], complete);
-
+program
+  .command ('build', 'build data model')
+  .command ('seed', 'build data model and seed database')
+  .parse (process.argv);
