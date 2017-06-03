@@ -15,7 +15,7 @@ describe ('lib.resolvers.concat', function () {
 
     async.waterfall ([
       function (callback) {
-        concat.call (context, [1, 2], [3, 4]) (callback);
+        concat.call (context, [1, 2], [3, 4]).call (context, callback);
       },
 
       function (data, callback) {
