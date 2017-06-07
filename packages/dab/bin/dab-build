@@ -14,15 +14,17 @@ function writeModelsToConsole (models, callback) {
   return callback (null);
 }
 
-function writeModelsToDirectory (models, dir, callback) {
-  let fullpath = path.resolve (dir);
+function writeModelsToDirectory (models, opts, callback) {
+  let fullpath = path.resolve (opts.dir);
   debug ('writing models to ' + fullpath);
 
   async.eachOf (models, (coll, modelName, callback) => {
     debug ('writing values for model %s', modelName);
 
+    const collectionName = opts.mapping && opts.mapping[modelName] ? opts.mapping[modelName] : modelName;
+
     // Create a write stream to the target file for the models in the collection.
-    const fileName = path.resolve (dir, modelName + '.json');
+    const fileName = path.resolve (fullpath, collectionName + '.json');
     let writeStream = fs.createWriteStream (fileName, { flags : 'w' });
 
     async.each (coll, (item, callback) => {
@@ -58,7 +60,14 @@ function runCommand (file) {
 
     function (models, callback) {
       if (program.dir) {
-        writeModelsToDirectory (models, program.dir, callback);
+        let opts = { dir: program.dir };
+
+        if (program.mapping) {
+          const importFile = path.isAbsolute (program.mapping) ? program.mapping : path.resolve (process.cwd (), program.mapping);
+          opts.mapping = require (importFile);
+        }
+
+        writeModelsToDirectory (models, opts, callback);
       }
       else {
         writeModelsToConsole (models, callback);
