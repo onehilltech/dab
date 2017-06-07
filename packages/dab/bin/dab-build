@@ -4,9 +4,40 @@
 const async = require ('async')
   , path    = require ('path')
   , program = require ('commander')
-  , debug   = require ('debug')('dab:bin:dab')
+  , debug   = require ('debug')('dab:dab-build')
+  , fs      = require ('fs')
   , dab     = require ('../lib')
   ;
+
+function writeModelsToConsole (models, callback) {
+  console.log (JSON.stringify (models));
+  return callback (null);
+}
+
+function writeModelsToDirectory (models, dir, callback) {
+  let fullpath = path.resolve (dir);
+  debug ('writing models to ' + fullpath);
+
+  async.eachOf (models, (coll, modelName, callback) => {
+    debug ('writing values for model %s', modelName);
+
+    // Create a write stream to the target file for the models in the collection.
+    const fileName = path.resolve (dir, modelName + '.json');
+    let writeStream = fs.createWriteStream (fileName, { flags : 'w' });
+
+    async.each (coll, (item, callback) => {
+      const json = JSON.stringify (item);
+      writeStream.write (`${json}\n`);
+
+      return callback (null);
+    }, done);
+
+    function done (err) {
+      writeStream.end ();
+      return callback (err);
+    }
+  }, callback);
+}
 
 function runCommand (file) {
   let filename = path.resolve (file);
@@ -26,14 +57,20 @@ function runCommand (file) {
     },
 
     function (models, callback) {
-      console.log (JSON.stringify (models));
-      return callback (null);
+      if (program.dir) {
+        writeModelsToDirectory (models, program.dir, callback);
+      }
+      else {
+        writeModelsToConsole (models, callback);
+      }
     }
   ], complete);
 }
 
 program
   .arguments ('<file>')
+  .option ('-o, --dir <dir>', 'output directory')
+  .option ('-m, --mapping <file>', 'model to collection mapping')
   .action (runCommand);
 
 program.parse (process.argv);
