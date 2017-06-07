@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-const async = require ('async')
-  , path    = require ('path')
-  , program = require ('commander')
-  , debug   = require ('debug')('dab:dab-build')
-  , fs      = require ('fs')
-  , dab     = require ('../lib')
+const async  = require ('async')
+  , path     = require ('path')
+  , program  = require ('commander')
+  , mongoose = require ('mongoose')
+  , debug    = require ('debug')('dab:dab-build')
+  , fs       = require ('fs')
+  , dab      = require ('../lib')
   ;
 
 function writeModelsToConsole (models, callback) {
@@ -43,6 +44,8 @@ function writeModelsToDirectory (models, opts, callback) {
 
 function runCommand (file) {
   let filename = path.resolve (file);
+  let conn = null;
+
   debug ('dabbing using ' + filename);
 
   // Load the dab file.
@@ -54,13 +57,27 @@ function runCommand (file) {
   }
 
   async.waterfall ([
+    // Open a connection to the database. This is only necessary if the data
+    // builder needs a database connection as part of the build process.
+    function (callback) {
+      if (!program.connstr)
+        return callback (null);
+
+      conn = mongoose.createConnection ();
+      conn.open (program.connstr, callback);
+    },
+
+    // Build the data model.
     function (callback) {
       dab.build (data, callback);
     },
 
+    // Output the built models.
     function (models, callback) {
       if (program.dir) {
-        let opts = { dir: program.dir };
+        let opts = {
+          dir: program.dir,
+        };
 
         if (program.mapping) {
           const importFile = path.isAbsolute (program.mapping) ? program.mapping : path.resolve (process.cwd (), program.mapping);
@@ -72,6 +89,10 @@ function runCommand (file) {
       else {
         writeModelsToConsole (models, callback);
       }
+    },
+
+    function (callback) {
+      return conn ? conn.close (callback) : callback (null);
     }
   ], complete);
 }
@@ -80,6 +101,7 @@ program
   .arguments ('<file>')
   .option ('-o, --dir <dir>', 'output directory')
   .option ('-m, --mapping <file>', 'model to collection mapping')
+  .option ('-c, --connection-string <connstr>', 'connection string for database')
   .action (runCommand);
 
 program.parse (process.argv);
