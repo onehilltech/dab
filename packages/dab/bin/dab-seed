@@ -17,11 +17,23 @@ function seed (models, db, opts, callback) {
     let collectionName = opts.mapping && opts.mapping[modelName] ? opts.mapping[modelName] : modelName;
     let coll = db.collection (collectionName);
 
-    debug ('writing values for model %s => %s', modelName, collectionName);
+    async.series ([
+      function (callback) {
+        if (opts.clear) {
+          debug ('clearing values in collection %s', collectionName);
+          return coll.deleteMany (callback);
+        }
 
+        return callback (null);
+      },
 
-    // Insert the entries into the collection.
-    coll.insert (entries, {w: 1}, callback);
+      function (callback) {
+        debug ('writing values for model %s => %s', modelName, collectionName);
+
+        // Insert the entries into the collection.
+        coll.insert (entries, {w: 1}, callback);
+      }
+    ], callback);
   }, callback);
 }
 
