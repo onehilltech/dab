@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+'use strict';
+
+const async  = require ('async')
+  , path     = require ('path')
+  , program  = require ('commander')
+  , mongoose = require ('mongoose')
+  , debug    = require ('debug')('dab:dab-seed')
+  , fs       = require ('fs')
+  , dab      = require ('../lib')
+  , MongoClient = require ('mongodb').MongoClient
+  ;
+
+function seed (models, db, opts, callback) {
+  async.eachOf (models, (entries, modelName, callback) => {
+    // Get the collection for this set of models.
+    let collectionName = opts.mapping && opts.mapping[modelName] ? opts.mapping[modelName] : modelName;
+    let coll = db.collection (collectionName);
+
+    debug ('writing values for model %s => %s', modelName, collectionName);
+
+
+    // Insert the entries into the collection.
+    coll.insert (entries, {w: 1}, callback);
+  }, callback);
+}
+
+function runCommand (file) {
+  let filename = path.resolve (file);
+
+  debug ('dabbing using ' + filename);
+
+  // Load the dab file.
+  let data = require (filename);
+
+  function complete (err) {
+    if (err)
+      return console.error (err);
+  }
+
+  async.waterfall ([
+    // Open a connection to the database. This is only necessary if the data
+    // builder needs a database connection as part of the build process.
+    function (callback) {
+      MongoClient.connect (program.connection, callback);
+    },
+
+    function (db, callback) {
+      async.waterfall ([
+        function (callback) {
+          debug ('building data model');
+          dab.build (data, callback);
+        },
+
+        function (models, callback) {
+          let opts = {
+            clear: !!program.clear
+          };
+
+          if (program.mapping) {
+            const importFile = path.isAbsolute (program.mapping) ? program.mapping : path.resolve (process.cwd (), program.mapping);
+            debug ('using mapping ', importFile);
+
+            opts.mapping = require (importFile);
+          }
+
+          debug ('seeding the database');
+          seed (models, db, opts, callback);
+        },
+
+        function (callback) {
+          db.close (true, callback);
+        }
+      ], callback);
+    },
+  ], complete);
+}
+
+program
+  .arguments ('<file>')
+  .option ('-m, --mapping <file>', 'model to collection mapping')
+  .option ('-c, --connection <connstr>', 'connection string for database')
+  .option ('--clear', 'clear collections before seeding')
+  .action (runCommand);
+
+program.parse (process.argv);
