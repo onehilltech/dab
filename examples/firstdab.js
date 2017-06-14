@@ -3,12 +3,12 @@
 const dab = require ('../lib');
 
 module.exports = {
-  users: dab.times (100, function (i, opts, callback) {
+  users: dab.times (10, function (i, opts, callback) {
     const value = {username: 'user' + i, password: 'user' + i, age: dab.randomInt (21, 60)};
     return callback (null, value);
   }),
 
-  comments: dab.times (1000, function (i, opts, callback) {
+  comments: dab.times (100, function (i, opts, callback) {
     let user = dab.ref (dab.sample (dab.get ('users')));
     let comment = {user: user, comment: 'This is comment ' + i};
 

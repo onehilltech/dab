@@ -5,5 +5,5 @@ const program = require ('commander');
 
 program
   .command ('build', 'build data model')
-//  .command ('seed', 'build data model and seed database')
+  .command ('seed', 'build data model and seed database')
   .parse (process.argv);
