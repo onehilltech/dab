@@ -64,7 +64,7 @@ function runCommand (file) {
         return callback (null);
 
       conn = mongoose.createConnection ();
-      conn.open (program.connstr, callback);
+      conn.openUri (program.connstr, callback);
     },
 
     // Build the data model.
