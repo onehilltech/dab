@@ -14,7 +14,7 @@ describe ('lib.resolvers.gridfs', function () {
   var conn = mongoose.createConnection ();
 
   before (function (done) {
-    conn.open ('mongodb://localhost/dab_tests', done);
+    conn.openUri ('mongodb://localhost/dab_tests', done);
   });
 
   after (function (done) {
