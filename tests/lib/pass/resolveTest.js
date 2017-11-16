@@ -23,7 +23,7 @@ describe ('lib.phase.resolve', function () {
       if (err)
         return done (err);
 
-      expect (result).to.have.deep.property ('comments.0.user').to.eql (result.users[0]._id);
+      expect (result).to.have.nested.property ('comments.0.user').to.eql (result.users[0]._id);
       expect (unresolved).to.eql ({});
 
       return done (null);
@@ -108,8 +108,7 @@ describe ('lib.phase.resolve', function () {
         return done (err);
 
       expect (unresolved).to.have.keys (['mapped']);
-      expect (unresolved).to.have.property ('mapped').that.is.a.function;
-      expect (unresolved).to.have.deep.property ('mapped.name', '__dabMap');
+      expect (unresolved).to.have.nested.property ('mapped.name', '__dabMap');
 
       expect (result.mapped).to.be.undefined;
 
@@ -137,8 +136,8 @@ describe ('lib.phase.resolve', function () {
 
       expect (unresolved).to.have.keys (['comments.0.user', 'comments.1.user']);
 
-      expect (result).to.have.deep.property ('comments.0.user').that.is.undefined;
-      expect (result).to.have.deep.property ('comments.1.user').that.is.undefined;
+      expect (result).to.have.nested.property ('comments.0.user').that.is.undefined;
+      expect (result).to.have.nested.property ('comments.1.user').that.is.undefined;
 
       expect (result.comments).to.have.length (2);
 
