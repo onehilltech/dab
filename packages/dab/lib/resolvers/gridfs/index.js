@@ -4,6 +4,7 @@ const mongodb = require ('mongodb')
   , mime      = require ('mime-types')
   , fs        = require ('fs')
   , path      = require ('path')
+  , async     = require ('async')
   ;
 
 function gridfs (file, db, bucketName) {
@@ -13,15 +14,15 @@ function gridfs (file, db, bucketName) {
     const opts = {contentType: contentType};
     const name = path.basename (file);
 
-    var uploadStream  = bucket.openUploadStream (name, opts);
+    let uploadStream  = bucket.openUploadStream (name, opts);
 
     fs.createReadStream (file)
       .pipe (uploadStream)
-      .once ('error', function (err) {
-        return callback (err);
-      })
+      .once ('error', callback)
       .once ('finish', function () {
-        return callback (null, uploadStream.id);
+        async.nextTick (function () {
+          return callback (null, uploadStream.id);
+        });
       });
   };
 }

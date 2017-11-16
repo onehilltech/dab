@@ -13,7 +13,11 @@ function clone (value) {
       if (result === undefined)
         return callback (null, undefined);
 
-      return callback (null, _.clone (result));
+      let clone = _.clone (result);
+
+      async.nextTick (function () {
+        return callback (null, clone);
+      });
     }, callback);
   }
 }

@@ -20,7 +20,7 @@ function Resolver (opts, data, path) {
 }
 
 Resolver.prototype.getChild = function (path, opts) {
-  var childPath = this._path.slice ();
+  let childPath = this._path.slice ();
 
   if (path !== undefined)
     childPath.push (path);
@@ -52,7 +52,9 @@ Resolver.prototype.resolve = function (value, callback) {
       if (result === undefined)
         this._unresolved[child.path] = value;
 
-      return callback (null, result);
+      async.nextTick (function () {
+        return callback (null, result);
+      });
     }.bind (this);
   }
 
@@ -66,22 +68,22 @@ Resolver.prototype.resolve = function (value, callback) {
       }.bind (this),
 
       function (result, callback) {
-        process.nextTick (function () {
+        async.nextTick (function () {
           this.resolve (result, callback);
         }.bind (this));
       }.bind (this)
     ], callback);
   }
   else if (_.isArray (value)) {
-    process.nextTick (function () {
+    async.nextTick (function () {
       // We need to create a map out of the array so we can have the index
       // values for our child resolvers.
-      var wrapped = value.map (function (value, index) {
+      let wrapped = value.map (function (value, index) {
         return {index: index, value: value};
       });
 
       async.map (wrapped, function (item, callback) {
-        var resolver = this.getChild (item.index, _.extend (this._opts, {genIds: true}));
+        let resolver = this.getChild (item.index, _.extend (this._opts, {genIds: true}));
         resolver.resolve (item.value, resolved.call (this, resolver, value, callback));
       }.bind (this), callback);
     }.bind (this));
@@ -93,9 +95,9 @@ Resolver.prototype.resolve = function (value, callback) {
     if (this._genIds && value[this._idKey] === undefined)
       value[this._idKey] = new ObjectId ();
 
-    process.nextTick (function () {
+    async.nextTick (function () {
       async.mapValues (value, function (value, key, callback) {
-        var resolver = this.getChild (key, _.extend (this._opts, {genIds: true}));
+        let resolver = this.getChild (key, _.extend (this._opts, {genIds: true}));
         resolver.resolve (value, resolved.call (this, resolver, value, callback));
       }.bind (this), callback);
     }.bind (this));
@@ -124,7 +126,7 @@ function resolve (value, data, opts, callback) {
     opts = {};
   }
 
-  var resolver = new Resolver (opts, data);
+  let resolver = new Resolver (opts, data);
 
   resolver.resolve (value, function (err, result) {
     if (err)

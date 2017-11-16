@@ -13,7 +13,9 @@ function filter (values, func) {
         return callback (null, result);
 
       async.filter (result, function (value, callback) {
-        func.call (this.data, value, this.opts, callback);
+        async.nextTick (function () {
+          func.call (this._data, value, this._opts, callback);
+        }.bind (this));
       }.bind (this), callback);
     }.bind (this), callback);
   }.bind (this)

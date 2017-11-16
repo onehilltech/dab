@@ -1,7 +1,9 @@
 'use strict';
 
+const async = require ('async');
+
 function concat () {
-  var values = [].slice.call (arguments);
+  let values = [].slice.call (arguments);
 
   return function __dabStringConcat (callback) {
     this.resolve (values, function (err, result) {
@@ -11,8 +13,11 @@ function concat () {
       if (result === undefined)
         return callback (null, undefined);
 
-      const str = String.prototype.concat.apply ('', result);
-      return callback (null, str);
+      let concat = String.prototype.concat.apply ('', result);
+
+      async.nextTick (function () {
+        return callback (null, concat);
+      });
     });
   }
 }

@@ -16,7 +16,7 @@ function times (n, func) {
       async.times (n, function (i, next) {
         debug ('generating item ' + i + ' of ' + n);
 
-        process.nextTick (function () {
+        async.nextTick (function () {
           func.call (this._data, i, this._opts, next);
         }.bind (this))
       }.bind (this), callback);

@@ -6,7 +6,7 @@ const _   = require ('underscore')
 
 function get (path) {
   return function __dabGet (callback) {
-    var value = this._data.get (path);
+    let value = this._data.get (path);
 
     // If the result of get is a function, then that means the value has not
     // be resolved up to this point. We need to return undefined so the resolver

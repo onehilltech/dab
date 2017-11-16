@@ -13,7 +13,11 @@ function keys (value) {
       if (result === undefined)
         return callback (null, undefined);
 
-      return callback (null, _.keys (result));
+      let keys = _.keys (result);
+
+      async.nextTick (function () {
+        return callback (null, keys);
+      });
     }, callback);
   }
 }
