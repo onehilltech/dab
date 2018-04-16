@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-'use strict';
 
 const async  = require ('async')
   , path     = require ('path')
   , program  = require ('commander')
-  , mongoose = require ('mongoose')
   , debug    = require ('debug')('dab:dab-seed')
   , fs       = require ('fs')
   , dab      = require ('../lib')

@@ -1,100 +1,44 @@
 #!/usr/bin/env node
-'use strict';
 
-const async  = require ('async')
-  , path     = require ('path')
-  , program  = require ('commander')
-  , mongoose = require ('mongoose')
-  , debug    = require ('debug')('dab:dab-build')
-  , fs       = require ('fs')
-  , dab      = require ('../lib')
-  ;
+const path = require ('path');
+const program = require ('commander');
+const mongoose = require ('mongoose');
+const debug = require ('debug')('dab:dab-build');
+const fs = require ('fs-extra');
+const dab = require ('../lib');
+const BluebirdPromise = require ('bluebird');
 
-function writeModelsToConsole (models, callback) {
+const {
+  mapValues
+} = require ('lodash');
+
+function writeModelsToConsole (models) {
   console.log (JSON.stringify (models));
-  return callback (null);
 }
 
-function writeModelsToDirectory (models, opts, callback) {
-  let fullpath = path.resolve (opts.dir);
-  debug ('writing models to ' + fullpath);
+function writeModelsToDirectory (models, opts) {
+  let basepath = path.resolve (opts.dir);
+  debug ('writing models to ' + basepath);
 
-  async.eachOf (models, (coll, modelName, callback) => {
-    debug ('writing values for model %s', modelName);
+  return fs.ensureDir (basepath).then (() => {
+    let mapped = mapValues (models, (coll, modelName) => {
+      debug (`writing values for model ${modelName}`);
+      const collectionName = opts.mapping && opts.mapping[modelName] ? opts.mapping[modelName] : modelName;
 
-    const collectionName = opts.mapping && opts.mapping[modelName] ? opts.mapping[modelName] : modelName;
+      // Create a write stream to the target file for the models in the collection.
+      const fileName = path.resolve (basepath, `${collectionName}.json`);
+      let writeStream = fs.createWriteStream (fileName, {flags: 'w'});
 
-    // Create a write stream to the target file for the models in the collection.
-    const fileName = path.resolve (fullpath, collectionName + '.json');
-    let writeStream = fs.createWriteStream (fileName, { flags : 'w' });
+      let promises = coll.map (item => {
+        const json = JSON.stringify (item);
+        return writeStream.write (`${json}\n`);
+      });
 
-    async.each (coll, (item, callback) => {
-      const json = JSON.stringify (item);
-      writeStream.write (`${json}\n`);
+      return Promise.all (promises);
+    });
 
-      return callback (null);
-    }, done);
-
-    function done (err) {
-      writeStream.end ();
-      return callback (err);
-    }
-  }, callback);
-}
-
-function runCommand (file) {
-  let filename = path.resolve (file);
-  let conn = null;
-
-  debug ('dabbing using ' + filename);
-
-  // Load the dab file.
-  let data = require (filename);
-
-  function complete (err) {
-    if (err)
-      return console.error (err);
-  }
-
-  async.waterfall ([
-    // Open a connection to the database. This is only necessary if the data
-    // builder needs a database connection as part of the build process.
-    function (callback) {
-      if (!program.connstr)
-        return callback (null);
-
-      conn = mongoose.createConnection ();
-      conn.openUri (program.connstr, callback);
-    },
-
-    // Build the data model.
-    function (callback) {
-      dab.build (data, callback);
-    },
-
-    // Output the built models.
-    function (models, callback) {
-      if (program.dir) {
-        let opts = {
-          dir: program.dir,
-        };
-
-        if (program.mapping) {
-          const importFile = path.isAbsolute (program.mapping) ? program.mapping : path.resolve (process.cwd (), program.mapping);
-          opts.mapping = require (importFile);
-        }
-
-        writeModelsToDirectory (models, opts, callback);
-      }
-      else {
-        writeModelsToConsole (models, callback);
-      }
-    },
-
-    function (callback) {
-      return conn ? conn.close (callback) : callback (null);
-    }
-  ], complete);
+    return BluebirdPromise.props (mapped);
+  });
 }
 
 program
@@ -105,3 +49,44 @@ program
   .action (runCommand);
 
 program.parse (process.argv);
+
+function openConnection () {
+  if (!program.connstr)
+    return Promise.resolve ();
+
+  let conn = mongoose.createConnection ();
+  return conn.openUri (program.connstr);
+}
+
+function runCommand (file) {
+  let filename = path.resolve (file);
+  debug (`dabbing using ${filename}`);
+
+  // Load the dab file.
+  let data = require (filename);
+
+  openConnection ().then (conn => {
+    return dab.build (data).then (data => {
+      if (program.dir) {
+        let opts = {
+          dir: program.dir,
+        };
+
+        if (program.mapping) {
+          const importFile = path.isAbsolute (program.mapping) ? program.mapping : path.resolve (process.cwd (), program.mapping);
+          opts.mapping = require (importFile);
+        }
+
+        return writeModelsToDirectory (data, opts);
+      }
+      else {
+        return writeModelsToConsole (data);
+      }
+    }).then (() => {
+      if (conn)
+        return conn.close ();
+    }).catch (err => {
+      console.error (err)
+    });
+  });
+}
