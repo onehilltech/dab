@@ -25,7 +25,7 @@ module.exports = function (values, func) {
       if (result === undefined)
         return undefined;
 
-      let filtered = filter (result, value => func.call (this, value));
+      let filtered = filter (result, (value, key) => func.call (this, value, key));
       return Promise.all (filtered);
     });
   };
