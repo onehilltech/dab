@@ -34,5 +34,5 @@ module.exports = {
       function (item) {
         return {user: item._id, comment: dab.ref (dab.sample (dab.get ('comments')))};
       }),
-    3)
+    10)
 };
