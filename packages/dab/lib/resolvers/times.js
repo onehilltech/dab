@@ -1,27 +1,38 @@
-'use strict';
+/*
+ * Copyright (c) 2018 One Hill Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-const async = require ('async')
-  , debug   = require ('debug') ('dab:times')
-  ;
+const {
+  times
+} = require ('lodash');
 
-function times (n, func) {
-  return function __dabTimes (callback) {
-    this.resolve (n, function (err, n) {
-      if (err)
-        return callback (err);
-
+module.exports = function (n, func) {
+  return function __dabTimes () {
+    return this.resolve (n).then (n => {
       if (n === undefined)
-        return callback (null, undefined);
+        return undefined;
 
-      async.times (n, function (i, next) {
-        debug ('generating item ' + i + ' of ' + n);
+      let results = new Array (n);
 
-        async.nextTick (function () {
-          func.call (this._data, i, this._opts, next);
-        }.bind (this))
-      }.bind (this), callback);
-    }.bind (this));
-  };
-}
+      times (n, i => {
+        results[i] = func.call (this, i);
+      });
 
-module.exports = times;
+      return Promise.all (results);
+    });
+  }
+};
+

@@ -1,25 +1,31 @@
-'use strict';
+/*
+ * Copyright (c) 2018 One Hill Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-const async  = require ('async')
-  , _        = require ('underscore')
-  ;
+const {
+  shuffle
+} = require ('lodash');
 
-function shuffle (values) {
-  return function __dabShuffle (callback) {
-    this.resolve (values, function (err, result) {
-      if (err)
-        return callback (err);
-
+module.exports = function (values) {
+  return function __dabShuffle () {
+    return this.resolve (values).then (result => {
       if (result === undefined)
-        return callback (null, undefined);
+        return undefined;
 
-      let shuffle = _.shuffle (result);
-
-      async.nextTick (function () {
-        return callback (null, shuffle);
-      });
-    }, callback);
+      return shuffle (result);
+    });
   }
-}
-
-module.exports = shuffle;
+};
