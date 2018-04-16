@@ -1,6 +1,8 @@
 dab
 =====
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/onehilltech/dab.svg)](https://greenkeeper.io/)
+
 A complex data builder that uses simple definitions
 
 [![npm version](https://img.shields.io/npm/v/@onehilltech/dab.svg)](https://www.npmjs.com/package/@onehilltech/dab)
