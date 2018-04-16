@@ -28,7 +28,7 @@ program
 
 program.parse (process.argv);
 
-function seed (models, db, opts) {
+function seed (db, models, opts) {
   let mapped = mapValues (models, (entries, modelName) => {
     // Get the collection for this set of models.
     let collectionName = get (opts, `mapping.${modelName}`, modelName);
@@ -79,7 +79,7 @@ function runCommand (file) {
       }
 
       debug ('seeding the database');
-      return seed (data, conn.db, opts);
+      return seed (conn.db, data, opts);
     })
     .catch (err => {
       console.log (err);
