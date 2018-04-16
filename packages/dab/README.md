@@ -36,6 +36,9 @@ var data = {
 };
 ```
 
+Direct Integration
+---------------------
+
 Next, build the data model.
 
 ```javascript
