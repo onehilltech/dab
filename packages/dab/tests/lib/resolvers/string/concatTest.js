@@ -1,28 +1,33 @@
-'use strict';
+/*
+ * Copyright (c) 2018 One Hill Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-const expect = require ('chai').expect
-  , async    = require ('async')
-  , concat   = require ('../../../../lib/resolvers/string/concat')
-;
+const {expect} = require ('chai');
+const concat   = require ('../../../../lib/resolvers/string/concat');
 
-describe ('lib.resolvers.string.concat', function () {
-  it ('should concatenate a list of strings', function (done) {
-    var context = {
-      resolve: function (values, callback) {
-        return callback (null, values);
+describe ('lib | resolvers | string | concat', function () {
+  it ('should concatenate a list of strings', function () {
+    let context = {
+      resolve (values) {
+        return Promise.resolve (values);
       }
     };
 
-    async.waterfall ([
-      function (callback) {
-        var resolver = concat.call (context, 'Hello, ', 'World');
-        resolver.call (context, callback);
-      },
-
-      function (data, callback) {
-        expect (data).to.eql ('Hello, World');
-        return callback (null);
-      }
-    ], done);
+    return concat ('Hello, ', 'World').call (context).then (data => {
+      expect (data).to.equal ('Hello, World');
+    });
   });
 });
