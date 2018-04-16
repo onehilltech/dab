@@ -1,30 +1,44 @@
-'use strict';
+/*
+ * Copyright (c) 2018 One Hill Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-const mongodb = require ('mongodb')
-  , mime      = require ('mime-types')
-  , fs        = require ('fs')
-  , path      = require ('path')
-  , async     = require ('async')
-  ;
+const {
+  GridFSBucket
+} = require ('mongodb');
 
-function gridfs (file, db, bucketName) {
-  return function __dabGridFS (callback) {
-    const bucket = new mongodb.GridFSBucket (db, {bucketName: bucketName });
-    const contentType = mime.lookup (file);
-    const opts = {contentType: contentType};
-    const name = path.basename (file);
+const mime = require ('mime-types');
+const fs = require ('fs');
+const path = require ('path');
 
-    let uploadStream  = bucket.openUploadStream (name, opts);
+module.exports = function (file, db, bucketName) {
+  return function __dabGridFS () {
+    return new Promise ((resolve, reject) => {
+      const bucket = new GridFSBucket (db, {bucketName});
+      const contentType = mime.lookup (file);
+      const opts = {contentType};
+      const name = path.basename (file);
 
-    fs.createReadStream (file)
-      .pipe (uploadStream)
-      .once ('error', callback)
-      .once ('finish', function () {
-        async.nextTick (function () {
-          return callback (null, uploadStream.id);
+      let upload = bucket.openUploadStream (name, opts);
+
+      fs.createReadStream (file)
+        .pipe (upload)
+        .once ('error', reject)
+        .once ('finish', () => {
+          resolve (upload);
         });
-      });
+    });
   };
-}
-
-module.exports = gridfs;
+};
