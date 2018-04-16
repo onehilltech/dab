@@ -22,6 +22,8 @@ Getting Started
 First, define your data model.
 
 ```javascript
+// demo.js
+
 const dab = require ('@onehilltech/dab');
 
 var data = {
@@ -42,6 +44,8 @@ Direct Integration
 Next, build the data model.
 
 ```javascript
+// client.js
+
 dab.build (data).then (models => {
   // model is the final data model  
 });
@@ -53,6 +57,8 @@ and all computed values are resolved. The returned model can also seed a
 will contain instances of [Mongoose](http://mongoosejs.com/) documents.
 
 ```javascript
+// client.js
+
 dab.seed (models, conn).then (models => {
   // models will be MongoDB models
 });
