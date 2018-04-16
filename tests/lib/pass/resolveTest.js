@@ -1,14 +1,33 @@
-const expect = require ('chai').expect
-  , resolve  = require ('../../../lib/phase/resolve')
-  , async    = require ('async')
-  , ObjectId = require ('mongoose').Types.ObjectId
-  , dab      = require ('../../../lib')
-  ;
+/*
+ * Copyright (c) 2018 One Hill Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
+const {expect} = require ('chai');
+const resolve  = require ('../../../lib/phase/resolve');
+const {
+  Types: {
+    ObjectId
+  }
+} = require ('mongoose');
 
-describe ('lib.phase.resolve', function () {
-  it ('should a property in an object', function (done) {
-    var data = {
+const dab = require ('../../../lib');
+
+describe ('lib | phase | resolve', function () {
+  it ('should a property in an object', function () {
+    let data = {
       users: [
         {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
         {_id: ObjectId (), first_name: 'John', last_name: 'Doe'}
@@ -19,129 +38,96 @@ describe ('lib.phase.resolve', function () {
       ]
     };
 
-    resolve (data, data, function (err, result, unresolved) {
-      if (err)
-        return done (err);
-
-      expect (result).to.have.nested.property ('comments.0.user').to.eql (result.users[0]._id);
+    return resolve (data, data).then (({data, unresolved}) => {
+      expect (data).to.have.nested.property ('comments.0.user').to.eql (data.users[0]._id);
       expect (unresolved).to.eql ({});
-
-      return done (null);
     });
   });
 
-  it ('should resolve a function that generates an array', function (done) {
-    var data = {
+  it ('should resolve a function that generates an array', function () {
+    let data = {
       users: [
         {_id: ObjectId (), first_name: 'Jane', last_name: 'Doe'},
         {_id: ObjectId (), first_name: 'John', last_name: 'Doe'}
       ],
 
-      comments: dab.times (5, function (i, opts, callback) {
-        return callback (null, {_id: ObjectId ()})
+      comments: dab.times (5, function (i) {
+        return {_id: ObjectId ()};
       })
     };
 
-    resolve (data, data, function (err, result, unresolved) {
-      if (err)
-        return done (err);
-
-      expect (result.comments).to.have.length (5);
+    return resolve (data, data).then (({data, unresolved}) => {
+      expect (data.comments).to.have.length (5);
       expect (unresolved).to.eql ({});
-
-      return done (null);
     });
   });
 
-  it ('should resolve a static value', function (done) {
-    resolve ('static-value', {}, function (err, result, unresolved) {
-      if (err)
-        return done (err);
-
-      expect (result).to.equal ('static-value');
+  it ('should resolve a static value', function () {
+    return resolve ('static-value', {}).then (({data,unresolved}) => {
+      expect (data).to.equal ('static-value');
       expect (unresolved).to.eql ({});
-
-      return done (null);
     });
   });
 
-  it ('should resolve function composition', function (done) {
-    var data = {
+  it ('should resolve function composition', function () {
+    let data = {
       mapped: dab.map (
-        dab.times (5, function (i, opts, callback) {
-          return callback (null, {username: 'username' + i});
-        }),
-        function (value, opts, callback) {
+        dab.times (5, function (i) { return {username: 'username' + i}}),
+
+        function (value) {
           value.password = value.username;
-          return callback (null, value);
+          return value;
         })
     };
 
-    resolve (data, data, function (err, result, unresolved) {
-      if (err)
-        return done (err);
-
+    return resolve (data, data).then (({data,unresolved}) => {
       expect (unresolved).to.eql ({});
-      expect (result.mapped).to.have.length (5);
+      expect (data.mapped).to.have.length (5);
 
-      for (var i = 0; i < 5; ++ i)
-        expect (result.mapped[i].username).to.equal (result.mapped[i].password);
-
-      return done (null);
+      for (let i = 0; i < 5; ++ i)
+        expect (data.mapped[i].username).to.equal (data.mapped[i].password);
     });
   });
 
-  it ('should have unresolved values', function (done) {
-    var data = {
-      values: dab.times (5, function (i, opts, callback) {
-        return callback (null, {value: i})
+  it ('should have unresolved values', function () {
+    let data = {
+      values: dab.times (5, function (i) {
+        return {value: i};
       }),
 
-      mapped: dab.map (dab.get ('values'), function (item, opts, callback) {
+      mapped: dab.map (dab.get ('values'), function (item) {
         item.times3 = item.value * 3;
-        return callback (null, item);
+        return item;
       })
     };
 
-    resolve (data, data, function (err, result, unresolved) {
-      if (err)
-        return done (err);
-
+    return resolve (data, data).then (({data,unresolved}) => {
       expect (unresolved).to.have.keys (['mapped']);
       expect (unresolved).to.have.nested.property ('mapped.name', '__dabMap');
 
-      expect (result.mapped).to.be.undefined;
-
-      return done (null);
+      expect (data.mapped).to.be.undefined;
     });
   });
 
-  it ('should have unresolved values because of nested resolvers', function (done) {
-    var data = {
-      users: dab.times (2, function (i, opts, callback) {
-        return callback (null, {_id: new ObjectId (), username: 'username' + i})
+  it ('should have unresolved values because of nested resolvers', function () {
+    let data = {
+      users: dab.times (2, function (i) {
+        return {_id: new ObjectId (), username: `username${i}`};
       }),
 
-      comments: dab.times (2, function (i, opts, callback) {
-        var user = dab.ref (dab.sample (dab.get ('users')));
-        var value = {user: user, comment: 'This is comment #' + i};
-
-        return callback (null, value);
+      comments: dab.times (2, function (i) {
+        let user = dab.ref (dab.sample (dab.get ('users')));
+        return {user: user, comment: `This is comment #${i}`};
       })
     };
 
-    resolve (data, data, function (err, result, unresolved) {
-      if (err)
-        return done (err);
-
+    return resolve (data, data).then (({data,unresolved}) => {
       expect (unresolved).to.have.keys (['comments.0.user', 'comments.1.user']);
 
-      expect (result).to.have.nested.property ('comments.0.user').that.is.undefined;
-      expect (result).to.have.nested.property ('comments.1.user').that.is.undefined;
+      expect (data).to.have.nested.property ('comments.0.user').that.is.undefined;
+      expect (data).to.have.nested.property ('comments.1.user').that.is.undefined;
 
-      expect (result.comments).to.have.length (2);
-
-      return done (null);
+      expect (data.comments).to.have.length (2);
     });
   });
 });
