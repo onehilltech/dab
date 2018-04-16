@@ -39,8 +39,8 @@ var data = {
 Next, build the data model.
 
 ```javascript
-dab.build (data, function (err, model) {
-  // model is the final data model
+dab.build (data).then (models => {
+  // model is the final data model  
 });
 ```
 
@@ -50,10 +50,21 @@ and all computed values are resolved. The returned model can also seed a
 will contain instances of [Mongoose](http://mongoosejs.com/) documents.
 
 ```javascript
-dab.seed (model, function (err, dm) {
-  // dm.users will be a collection of Mongoose documents
+dab.seed (models, conn).then (models => {
+  // models will be MongoDB models
 });
 ```
+
+Command-line Usage
+---------------------
+
+It is possible to generate a dab model from the command-line:
+
+    dab build <dabfile>
+    
+You can even seed a database from the command-line:
+
+    dab seed --connection <CONNECTION> <dabfile>
 
 Next Steps
 -----------------
