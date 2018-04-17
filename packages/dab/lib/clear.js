@@ -15,13 +15,21 @@
  *
  */
 
-function clear (conn, models = []) {
-  let promises = conn.models.map (Model => {
-    if (models.length !== 0 && models.indexOf (Model.modelName) !== -1)
-      return Model.remove ({})
+const {
+  mapValues
+} = require ('lodash');
+
+const BluebirdPromise = require ('bluebird');
+
+function clear (conn, models) {
+  if (!conn.models)
+    return Promise.resolve ();
+
+  let promises = mapValues (conn.models, Model => {
+    return (models === undefined || models.includes (Model.modelName)) ? Model.remove ({}) : null;
   });
 
-  return Promise.all (promises);
+  return BluebirdPromise.props (promises);
 }
 
 module.exports = clear;
