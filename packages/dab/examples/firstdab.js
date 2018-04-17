@@ -23,16 +23,17 @@ module.exports = {
     return {username, password: username, age: dab.randomInt (21, 60)};
   }),
 
-  comments: dab.times (100, function (i) {
+  comments: dab.times (10000, function (i) {
     let user = dab.ref (dab.sample (dab.get ('users')));
     return {user, comment: `This is comment ${i}`};
   }),
 
+  /*
   likes: dab.sample (
     dab.map (
       dab.get ('users'),
       function (item) {
         return {user: item._id, comment: dab.ref (dab.sample (dab.get ('comments')))};
       }),
-    10)
+    10)*/
 };
