@@ -16,17 +16,22 @@
  */
 
 const {
-  mapValues
+  mapValues,
+  isEmpty
 } = require ('lodash');
 
+const debug = require ('dab:clear');
 const BluebirdPromise = require ('bluebird');
 
-function clear (conn, models) {
-  if (!conn.models)
+function clear (conn, models = []) {
+  if (isEmpty (conn.models))
     return Promise.resolve ();
 
-  let promises = mapValues (conn.models, Model => {
-    return (models === undefined || models.includes (Model.modelName)) ? Model.remove ({}).exec () : null;
+  let promises = mapValues (conn.models, (Model, name) => {
+    if (isEmpty (models) || models.includes (Model.modelName)) {
+      debug (`removing models for ${name}`);
+      return Model.remove ({}).exec ();
+    }
   });
 
   return BluebirdPromise.props (promises);
