@@ -20,7 +20,7 @@ const {
   isEmpty
 } = require ('lodash');
 
-const debug = require ('dab:clear');
+const debug = require ('debug')('dab:clear');
 const BluebirdPromise = require ('bluebird');
 
 function clear (conn, models = []) {
