@@ -16,9 +16,12 @@
  */
 
 const pluralize = require ('pluralize');
+const {
+  props
+} = require ('bluebird');
 
 const {
-  transform
+  mapValues
 } = require ('lodash');
 
 const debug = require ('debug') ('dab:seed');
@@ -26,16 +29,16 @@ const debug = require ('debug') ('dab:seed');
 function seed (conn, data) {
   // We want to seed the data in the order that it appears in
   // the data set.
-  return transform (data, (promise, values, name) => {
+  return props (mapValues (data, (values, name) => {
     let singular = pluralize.singular (name);
     let Model = conn.models[singular];
 
     if (!Model)
-      return promise.then (() => Promise.reject (new Error (`Model ${singular} does not exist`)));
+      throw new Error (`Model ${singular} does not exist`);
 
-    debug (`creating models for ${name} in database`);
-    return promise.then (() => Model.create (values));
-  }, Promise.resolve ());
+    debug (`adding models for ${name} to database`);
+    return Model.create (values);
+  }));
 }
 
 module.exports = seed;
