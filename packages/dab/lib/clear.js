@@ -26,7 +26,7 @@ function clear (conn, models) {
     return Promise.resolve ();
 
   let promises = mapValues (conn.models, Model => {
-    return (models === undefined || models.includes (Model.modelName)) ? Model.remove ({}) : null;
+    return (models === undefined || models.includes (Model.modelName)) ? Model.remove ({}).exec () : null;
   });
 
   return BluebirdPromise.props (promises);
