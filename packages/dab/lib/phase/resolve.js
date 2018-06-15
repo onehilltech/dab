@@ -128,7 +128,7 @@ class Resolver {
 /**
  * Resolve the values in the data model.
  */
-function resolve (value, data, opts = {}, path = null) {;
+function resolve (value, data, opts = {}, path = null) {
   let resolver = new Resolver (opts, data, path ? path.split ('.') : []);
 
   return resolver.resolve (value).then (result => {
