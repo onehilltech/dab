@@ -104,8 +104,6 @@ describe ('lib | phase | resolve', function () {
     return resolve (data, data).then (({data,unresolved}) => {
       expect (unresolved).to.have.keys (['mapped']);
       expect (unresolved).to.have.nested.property ('mapped.name', '__dabMap');
-
-      expect (data.mapped).to.be.undefined;
     });
   });
 
@@ -124,8 +122,8 @@ describe ('lib | phase | resolve', function () {
     return resolve (data, data).then (({data,unresolved}) => {
       expect (unresolved).to.have.keys (['comments.0.user', 'comments.1.user']);
 
-      expect (data).to.have.nested.property ('comments.0.user').that.is.undefined;
-      expect (data).to.have.nested.property ('comments.1.user').that.is.undefined;
+      expect (data).to.have.nested.property ('comments.0.user').to.be.a ('function');
+      expect (data).to.have.nested.property ('comments.1.user').to.be.a ('function');
 
       expect (data.comments).to.have.length (2);
     });
