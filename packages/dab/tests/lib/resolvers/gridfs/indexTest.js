@@ -33,7 +33,7 @@ describe ('lib | resolvers | gridfs', function () {
   let conn = mongoose.createConnection ();
 
   before (function () {
-    return conn.openUri ('mongodb://localhost/dab_tests');
+    return conn.openUri ('mongodb://localhost/dab_tests', {useNewUrlParser: true});
   });
 
   after (function () {
