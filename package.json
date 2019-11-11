@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/onehilltech/dab",
   "dependencies": {
-    "commander": "^2.15.1",
+    "commander": "^4.0.1",
     "debug": "^3.1.0",
     "faker": "^4.1.0",
     "fs-extra": "^5.0.0",
