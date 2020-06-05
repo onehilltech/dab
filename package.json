@@ -1,0 +1,7 @@
+{
+  "name": "dab-monorepo",
+  "private": false,
+  "devDependencies": {
+    "lerna": "^3.19.0"
+  }
+}
