@@ -6,3 +6,5 @@ module.exports = backend;
 exports.createBackend = function (opts) {
   return new Backend (opts);
 }
+
+exports.gridfs = require ('./gridfs');
