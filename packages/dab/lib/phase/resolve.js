@@ -15,7 +15,6 @@
  *
  */
 
-const ObjectId = require ('mongoose').Types.ObjectId;
 const BluebirdPromise = require ('bluebird');
 
 const {
@@ -34,7 +33,6 @@ class Resolver {
     this._data = data;
     this.unresolved = {};
     this._path = path;
-    this._idKey = opts.id || '_id';
     this._genIds = opts.genIds || false;
 
     Object.defineProperty (this, 'data', {
@@ -112,8 +110,10 @@ class Resolver {
       // We only want to map items that are hashes. Otherwise, we can assume
       // the item is an instance of an abstract data type. Also, let's make sure
       // that the item has an _id.
-      if (this._genIds && value[this._idKey] === undefined)
-        value[this._idKey] = new ObjectId ();
+      let id = this.backend.getPrimaryKeyForPath (this.path);
+
+      if (this._genIds && value[id] === undefined)
+        value[id] = this.backend.generateId (null, this.path);
 
       const mapping = mapValues (value, (value, key) => {
         const childOpts = extend ({}, this._opts, {genIds: true});

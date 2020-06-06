@@ -4,10 +4,12 @@ module.exports = BaseObject.extend ({
   /// Human readable name for the backend.
   name: null,
 
+  getPrimaryKeyForPath (path) {
+    return 'id';
+  },
+
   /**
    * Test of the connection for the backend supports the model name.
-   *
-   * @param Model
    */
   supports (conn, name) {
 
@@ -15,10 +17,8 @@ module.exports = BaseObject.extend ({
 
   /**
    * Generate the id for a model.
-   *
-   * @param value
    */
-  generateId (value) {
+  generateId (value, path) {
 
   },
 

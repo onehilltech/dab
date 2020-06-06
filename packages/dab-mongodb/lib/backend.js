@@ -26,6 +26,12 @@ const {
 } = require ('mongoose');
 
 module.exports = Backend.extend ({
+  id: '_id',
+
+  getPrimaryKeyForPath () {
+    return this.id;
+  },
+
   supports (conn, name) {
     const modelName = pluralize.singular (name);
     return !!conn.models[modelName];
