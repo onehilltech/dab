@@ -27,7 +27,8 @@ const {
 
 module.exports = Backend.extend ({
   supports (conn, name) {
-    return !!conn.models[name];
+    const modelName = pluralize.singular (name);
+    return !!conn.models[modelName];
   },
 
   /**
