@@ -18,6 +18,7 @@
 const { Backend } = require ('@onehilltech/dab');
 const { mapValues, isEmpty } = require ('lodash');
 const { props } = require ('bluebird');
+const debug = require ('debug') ('dab:mongodb');
 
 const {
   Types: { ObjectId }
