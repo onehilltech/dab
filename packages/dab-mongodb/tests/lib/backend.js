@@ -1,4 +1,7 @@
-const dab = require ('../../lib');
+const dab = require ('@onehilltech/dab');
+const backend = require ('../../lib');
+const { expect } = require ('chai');
+const { Types: { ObjectId }} = require ('mongoose');
 
 describe ('lib | backend', function () {
   describe ('build', function () {
@@ -13,7 +16,7 @@ describe ('lib | backend', function () {
         ]
       };
 
-      return build (data).then (result => {
+      return dab.build (data, { backend }).then (result => {
         expect (result).to.have.nested.property ('users[0]._id').that.is.instanceof (ObjectId);
 
         expect (result.comments).to.have.length (1);
