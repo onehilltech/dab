@@ -26,6 +26,10 @@ const {
 } = require ('mongoose');
 
 module.exports = Backend.extend ({
+  supports (conn, name) {
+    return !!conn.models[name];
+  },
+
   /**
    * Generate a new id, or one based on the existing value.
    *

@@ -5,11 +5,11 @@ module.exports = BaseObject.extend ({
   name: null,
 
   /**
-   * Test if the backend supports a model.
+   * Test of the connection for the backend supports the model name.
    *
    * @param Model
    */
-  supportsModel (Model) {
+  supports (conn, name) {
 
   },
 
