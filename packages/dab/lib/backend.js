@@ -30,5 +30,15 @@ module.exports = BaseObject.extend ({
    */
   seed (conn, models) {
 
+  },
+
+  /**
+   * Clear the collection of models.
+   *
+   * @param conn
+   * @param models
+   */
+  clear (conn, models) {
+
   }
 });
