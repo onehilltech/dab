@@ -41,25 +41,28 @@ var data = {
 Direct Integration
 ---------------------
 
-Next, build the data model.
+Next, build the data model. 
 
 ```javascript
 // client.js
 
-dab.build (data).then (models => {
+const backend = require ('@onehilltech/dab-mongodb');
+
+dab.build (data, { backend }).then (models => {
   // model is the final data model  
 });
 ```
 
-The result will be a data model where all objects have an ```_id``` property, 
-and all computed values are resolved. The returned model can also seed a 
-[MongoDB](https://www.mongodb.com/) database. Each collection in the data model 
+You must provide a target backend for the build. In the example above, the target backend 
+is [MongoDB](https://www.mongodb.com/). The result will be a data model where all objects 
+have an ```_id``` property, and all computed values are resolved. The returned model can also 
+seed a [MongoDB](https://www.mongodb.com/) database. Each collection in the data model 
 will contain instances of [Mongoose](http://mongoosejs.com/) documents.
 
 ```javascript
 // client.js
 
-dab.seed (models, conn).then (models => {
+dab.seed (models, conn, { backend }).then (models => {
   // models will be MongoDB models
 });
 ```
