@@ -1,6 +1,6 @@
 {
   "name": "@onehilltech/dab-mongodb",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "MongoDB backend for the dab framework",
   "main": "./lib/index.js",
   "public": true,
