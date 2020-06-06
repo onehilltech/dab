@@ -16,12 +16,12 @@
  */
 
 const resolve = require ('./phase/resolve');
+
 const {
   get,
   set,
   isEmpty,
   mapValues,
-  forOwn,
   transform
 } = require ('lodash');
 
@@ -47,7 +47,6 @@ class Builder {
   _resolve (snapshot, unresolved) {
     if (isEmpty (unresolved))
       return snapshot;
-
 
     if (this._iteration > this._maxIters)
       return Promise.reject (new Error ('We have reached the max iterations'));
@@ -85,6 +84,9 @@ class Builder {
  * @param opts          Build options
  */
 function build (data, opts = {}) {
+  if (!opts.backend)
+    throw new Error ('You must provide a backend options.');
+
   let builder = new Builder (opts);
   return builder.build (data);
 }

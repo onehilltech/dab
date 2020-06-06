@@ -16,19 +16,16 @@
  */
 
 const pluralize = require ('pluralize');
-const {
-  props
-} = require ('bluebird');
+const { props } = require ('bluebird');
 
-const {
-  mapValues
-} = require ('lodash');
+const { mapValues } = require ('lodash');
 
 const debug = require ('debug') ('dab:seed');
 
 function seed (conn, data) {
   // We want to seed the data in the order that it appears in
   // the data set.
+
   return props (mapValues (data, (values, name) => {
     let singular = pluralize.singular (name);
     let Model = conn.models[singular];

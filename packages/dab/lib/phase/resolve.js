@@ -48,6 +48,10 @@ class Resolver {
     Object.defineProperty (this, 'path', {
       get () { return this._path.join ('.') }
     });
+
+    Object.defineProperty (this, 'backend', {
+      get () { return this._opts.backend }
+    });
   }
 
   get (path, defaultValue) {
