@@ -33,5 +33,6 @@ exports.shuffle = require ('./shuffle');
 exports.times = require ('./times');
 exports.resolved = require ('./resolved');
 exports.uuid = require ('./uuid');
+exports.hash = require ('./hash');
 
 exports.string = require ('./string');

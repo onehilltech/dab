@@ -26,6 +26,7 @@
   "homepage": "https://github.com/onehilltech/dab",
   "dependencies": {
     "base-object": "^1.4.0",
+    "bcrypt": "^4.0.1",
     "commander": "^2.15.1",
     "debug": "^3.1.0",
     "faker": "^4.1.0",
