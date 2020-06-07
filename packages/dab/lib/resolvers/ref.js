@@ -27,7 +27,7 @@ module.exports = function (value) {
       if (result === undefined)
         return undefined;
 
-      const idKey = (this.opts.id || '_id');
+      const idKey = this.opts.id || this.backend.getPrimaryKeyForPath (this.path);
 
       if (isString (result)) {
         const idPath = result + '.' + idKey;
