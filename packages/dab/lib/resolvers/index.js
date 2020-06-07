@@ -32,5 +32,6 @@ exports.sample = require ('./sample');
 exports.shuffle = require ('./shuffle');
 exports.times = require ('./times');
 exports.resolved = require ('./resolved');
+exports.uuid = require ('./uuid');
 
 exports.string = require ('./string');
