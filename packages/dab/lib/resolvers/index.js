@@ -34,5 +34,7 @@ exports.times = require ('./times');
 exports.resolved = require ('./resolved');
 exports.uuid = require ('./uuid');
 exports.hash = require ('./hash');
+exports.flatten = require ('./flatten');
+exports.flattenDeep = require ('./flatten-deep');
 
 exports.string = require ('./string');
