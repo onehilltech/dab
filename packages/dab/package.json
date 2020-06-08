@@ -1,6 +1,6 @@
 {
   "name": "@onehilltech/dab",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "a complex data builder that uses simple definitions",
   "main": "./lib",
   "scripts": {
