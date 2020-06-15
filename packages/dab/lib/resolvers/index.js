@@ -30,6 +30,7 @@ exports.omit = require ('./omit');
 exports.ref = require ('./ref');
 exports.sample = require ('./sample');
 exports.shuffle = require ('./shuffle');
+exports.slice = require ('./slice');
 exports.times = require ('./times');
 exports.resolved = require ('./resolved');
 exports.uuid = require ('./uuid');
