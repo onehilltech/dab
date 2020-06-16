@@ -61,14 +61,15 @@ class Builder {
     const pending = mapValues (unresolved, (value, key) => resolve (value, snapshot, this._opts, key));
 
     return BluebirdPromise.props (pending).then (resolved => {
-      const remaining = transform (resolved, (result, value, key) => {
+      const remaining = transform (resolved, (remaining, value, key) => {
         const {data, unresolved} = value;
 
         if (data) {
           set (snapshot, key, data);
         }
-        else {
-          result[key] = unresolved[key];
+
+        if (!isEmpty (unresolved)) {
+          Object.assign (remaining, unresolved);
         }
       }, {});
 
