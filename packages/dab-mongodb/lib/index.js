@@ -1,7 +1,7 @@
 const Backend = require ('./backend');
 const backend = new Backend ();
 
-module.exports = backend;
+module.exports = exports = backend;
 
 exports.createBackend = function (opts) {
   return new Backend (opts);
