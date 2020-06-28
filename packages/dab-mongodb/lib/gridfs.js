@@ -23,7 +23,9 @@ const mime = require ('mime-types');
 const fs = require ('fs');
 const path = require ('path');
 
-module.exports = function (file, db, bucketName) {
+let identity = x => x;
+
+module.exports = function (file, db, bucketName, finish = identity) {
   return function __dabGridFS () {
     return new Promise ((resolve, reject) => {
       const bucket = new GridFSBucket (db, {bucketName});
@@ -36,9 +38,7 @@ module.exports = function (file, db, bucketName) {
       fs.createReadStream (file)
         .pipe (upload)
         .once ('error', reject)
-        .once ('finish', () => {
-          resolve (upload);
-        });
+        .once ('finish', () => resolve (finish (upload)));
     });
   };
 };
