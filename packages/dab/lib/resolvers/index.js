@@ -19,6 +19,7 @@ exports.clone = require ('./clone');
 exports.compact = require ('./compact');
 exports.computed = require ('./computed');
 exports.concat = require ('./concat');
+exports.chunk = require ('./chunk');
 exports.drop = require ('./drop');
 exports.filter = require ('./filter');
 exports.find = require ('./find');
