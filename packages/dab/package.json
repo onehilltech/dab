@@ -45,5 +45,6 @@
   },
   "bin": {
     "dab": "./bin/dab"
-  }
+  },
+  "gitHead": "6aaeb1d86634f2a185f7d1c035ad95abb22ce82f"
 }

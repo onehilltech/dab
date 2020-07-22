@@ -19,5 +19,6 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^7.2.0"
-  }
+  },
+  "gitHead": "6aaeb1d86634f2a185f7d1c035ad95abb22ce82f"
 }
