@@ -30,11 +30,11 @@ module.exports = function (values, func) {
         return undefined;
 
       if (isArray (result)) {
-        let mapped = result.map ((item, index) => func.call (this, item, index));
+        let mapped = result.map ((item, index, collection) => func.call (this, item, index, collection));
         return Promise.all (mapped);
       }
       else if (isPlainObject (result)) {
-        let mapped = mapValues (result, (value, key) => func.call (this, value, key));
+        let mapped = mapValues (result, (value, key, obj) => func.call (this, value, key, obj));
         return BluebirdPromise.props (mapped);
       }
       else {
