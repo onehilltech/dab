@@ -15,10 +15,22 @@
  *
  */
 
+const {
+  isFunction,
+  isArray,
+  some
+} = require ('lodash');
+
 module.exports = function (value, func) {
   return function __dabResolved () {
     return this.resolve (value).then (result => {
-      return result === undefined ? undefined : func (result);
+      if (result === undefined || isFunction (result))
+        return undefined;
+
+      if (isArray (result) && some (result, value => (value === undefined || isFunction (value))))
+        return undefined;
+
+      return func (result);
     });
   }
 };
