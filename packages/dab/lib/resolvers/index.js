@@ -38,5 +38,7 @@ exports.uuid = require ('./uuid');
 exports.hash = require ('./hash');
 exports.flatten = require ('./flatten');
 exports.flattenDeep = require ('./flatten-deep');
+exports.values = require ('./values');
+exports.valuesIn = require ('./values-in');
 
 exports.string = require ('./string');
