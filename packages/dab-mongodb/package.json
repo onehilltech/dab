@@ -1,6 +1,6 @@
 {
   "name": "@onehilltech/dab-mongodb",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "description": "MongoDB backend for the dab framework",
   "main": "./lib/index.js",
   "public": true,
@@ -10,7 +10,7 @@
   "author": "James H. Hill <james@onehilltech.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@onehilltech/dab": "^2.7.2",
+    "@onehilltech/dab": "^2.7.3",
     "bluebird": "^3.7.2",
     "lodash": "^4.17.15",
     "mongoose": "^5.9.18",
