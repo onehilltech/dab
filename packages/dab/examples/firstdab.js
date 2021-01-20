@@ -28,12 +28,11 @@ module.exports = {
     return {user, comment: `This is comment ${i}`};
   }),
 
-  /*
   likes: dab.sample (
     dab.map (
       dab.get ('users'),
       function (item) {
         return {user: item._id, comment: dab.ref (dab.sample (dab.get ('comments')))};
       }),
-    10)*/
+    10)
 };

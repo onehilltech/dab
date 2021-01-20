@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  users: 'dab_users',
-  comments: 'dab_comments',
-  likes: 'dab_likes'
+  users: 'fb_users',
+  comments: 'fb_comments',
+  likes: 'fb_likes'
 };
