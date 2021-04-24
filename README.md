@@ -1,6 +1,6 @@
 # dab
-A data builder for seeding SQL and NoSQL databases with simple and complex data from simple definitions
 
+A data builder for seeding SQL and NoSQL databases from simple definitions
 
 
 ## Getting Started
