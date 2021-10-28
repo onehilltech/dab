@@ -43,4 +43,8 @@ exports.valuesIn = require ('./values-in');
 exports.size = require ('./size');
 exports.reduce = require ('./reduce');
 
+exports.uniq = require ('./uniq');
+exports.uniqBy = require ('./uniq-by');
+exports.uniqWith = require ('./uniq-with');
+
 exports.string = require ('./string');
