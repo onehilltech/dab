@@ -26,17 +26,13 @@ const {
 module.exports = function (value, func) {
   return function __dabResolved () {
     return this.resolve (value).then (result => {
-      function resolved (value) {
-        if (value === undefined || isFunction (value))
-          return false;
+      if (result === undefined)
+        return undefined;
 
-        if (isArray (value) && some (value, v => (v === undefined || isFunction (v) || (isObjectLike (v) && !resolved (values (v))))))
-          return undefined;
+      if (isArray (result) && some (result, v => v === undefined))
+        return undefined;
 
-        return true;
-      }
-
-      return resolved (result) ? func (result) : undefined;
+      return func (value);
     });
   }
 };

@@ -15,7 +15,7 @@
  *
  */
 
-const BluebirdPromise = require ('bluebird');
+const { props } = require ('bluebird');
 
 const {
   isFunction,
@@ -65,43 +65,30 @@ class Resolver {
     return new Resolver (opts || this._opts, this._data, childPath);
   }
 
-  resolve (value) {
-    function resolved (resolver, original) {
-      return function (result) {
-        // Add the unresolved values from the child resolver to our resolver.
-        if (this !== resolver && !isEmpty (resolver.unresolved))
-          extend (this.unresolved, resolver.unresolved);
-
-        // The the result is undefined, then we need to add it to our collection
-        // of unresolved values.
-        if (result === undefined)
-          this.unresolved[resolver.path] = original;
-
-        return result;
-      }
-    }
-
+  async resolve (value) {
     if (isFunction (value)) {
       // The value is a function. Let's call the function when the resolve as it
       // context. The result of the function can be a value or another Promise.
       // Either way, we need to resolve the return value, then resolve the result.
-      let result = value.call (this);
 
-      return Promise.resolve (result)
-        .then (resolved (this, value).bind (this))
-        .then (this.resolve.bind (this));
+      const ret = await value.call (this);
+      const result = this._resolved (this, value).call (this, ret);
+
+      return this.resolve (result);
     }
     else if (isArray (value)) {
       // We need to resolve each value in the array. For each value, we need to create
       // a new resolver since each item in the array has a different path based on its
-      // index value (e.g., item.0, item.1, and item.n).
-      const mapped = value.map ((item, index) => {
-        const childOpts = extend ({}, this._opts, {genIds: true});
+      // index value (e.g., item[0], item[1], ..., item[n]).
+
+      const mapped = value.map (async (item, index) => {
+        const childOpts = extend ({}, this._opts, { genIds: true });
         const resolver = this.getChild (index, childOpts);
 
-        return resolver.resolve (item)
-          .then (resolved (resolver, item).bind (this))
-          .then (result => result !== undefined ? result : item);
+        const ret = await resolver.resolve (item);
+        const result = this._resolved (resolver, item).call (this, ret);
+
+        return result !== undefined ? result : item;
       });
 
       return Promise.all (mapped);
@@ -115,19 +102,35 @@ class Resolver {
       if (this._genIds && value[id] === undefined)
         value[id] = this.backend.generateId (null, this.path);
 
-      const mapping = mapValues (value, (value, key) => {
+      const mapping = mapValues (value, async (value, key) => {
         const childOpts = extend ({}, this._opts, {genIds: true});
         const resolver = this.getChild (key, childOpts);
 
-        return resolver.resolve (value)
-          .then (resolved (resolver, value).bind (this))
-          .then (result => result !== undefined ? result : value);
+        const ret = await resolver.resolve (value);
+        const result = this._resolved (resolver, value).call (this, ret);
+
+        return result !== undefined ? result : value;
       });
 
-      return BluebirdPromise.props (mapping);
+      return props (mapping);
     }
     else {
-      return Promise.resolve (value);
+      return value;
+    }
+  }
+
+  _resolved (resolver, original) {
+    return function (result) {
+      // Add the unresolved values from the child resolver to our resolver.
+      if (this !== resolver && !isEmpty (resolver.unresolved))
+        extend (this.unresolved, resolver.unresolved);
+
+      // The the result is undefined, then we need to add it to our collection
+      // of unresolved values.
+      if (result === undefined)
+        this.unresolved[resolver.path] = original;
+
+      return result;
     }
   }
 }
@@ -135,12 +138,11 @@ class Resolver {
 /**
  * Resolve the values in the data model.
  */
-function resolve (value, data, opts = {}, path = null) {
+async function resolve (value, data, opts = {}, path = null) {
   let resolver = new Resolver (opts, data, path ? path.split ('.') : []);
 
-  return resolver.resolve (value).then (result => {
-    return {data: result, unresolved: resolver.unresolved};
-  });
+  const result = await resolver.resolve (value);
+  return { data: result, unresolved: resolver.unresolved };
 }
 
 module.exports = resolve;

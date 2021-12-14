@@ -15,7 +15,7 @@
  *
  */
 
-function clear (conn, models = [], opts = {}) {
+async function clear (conn, models = [], opts = {}) {
   const { backend } = opts;
 
   if (!backend)

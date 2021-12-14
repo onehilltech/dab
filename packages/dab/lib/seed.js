@@ -15,7 +15,7 @@
  *
  */
 
-function seed (conn, data, opts = {}) {
+async function seed (conn, data, opts = {}) {
   const { backend } = opts;
 
   if (!backend)

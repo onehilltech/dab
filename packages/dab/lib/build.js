@@ -27,7 +27,7 @@ const {
 
 const debug = require ('debug') ('dab:build');
 
-const BluebirdPromise = require ('bluebird');
+const { props } = require ('bluebird');
 
 const DEFAULT_MAX_ITERATIONS = 10;
 
@@ -37,19 +37,24 @@ class Builder {
     this._opts = opts;
   }
 
-  build (data) {
+  /**
+   *
+   * @param data
+   * @returns {Promise<*>}
+   */
+  async build (data) {
     this._iteration = 1;
 
-    return resolve (data, data, this._opts)
-      .then (({data, unresolved}) => this._resolve (data, unresolved));
+    const {data, unresolved} = await resolve (data, data, this._opts);
+    return this._resolve (data, unresolved);
   }
 
-  _resolve (snapshot, unresolved) {
+  async _resolve (snapshot, unresolved) {
     if (isEmpty (unresolved))
       return snapshot;
 
     if (this._iteration > this._maxIters)
-      return Promise.reject (new Error ('We have reached the max iterations'));
+      return throw new Error ('We have reached the max iterations');
 
     debug (`iteration ${this._iteration} complete`);
 
@@ -58,23 +63,21 @@ class Builder {
 
     debug (`resolving ${Object.keys (unresolved).length} values`);
 
-    const pending = mapValues (unresolved, (value, key) => resolve (value, snapshot, this._opts, key));
+    const resolved = await props (mapValues (unresolved, (value, key) => resolve (value, snapshot, this._opts, key)));
 
-    return BluebirdPromise.props (pending).then (resolved => {
-      const remaining = transform (resolved, (remaining, value, key) => {
-        const {data, unresolved} = value;
+    const remaining = transform (resolved, (remaining, value, key) => {
+      const {data, unresolved} = value;
 
-        if (data) {
-          set (snapshot, key, data);
-        }
+      if (data) {
+        set (snapshot, key, data);
+      }
 
-        if (!isEmpty (unresolved)) {
-          Object.assign (remaining, unresolved);
-        }
-      }, {});
+      if (!isEmpty (unresolved)) {
+        Object.assign (remaining, unresolved);
+      }
+    }, {});
 
-      return this._resolve (snapshot, remaining);
-    });
+    return this._resolve (snapshot, remaining);
   }
 }
 
@@ -84,7 +87,7 @@ class Builder {
  * @param data          Dab data model
  * @param opts          Build options
  */
-function build (data, opts = {}) {
+async function build (data, opts = {}) {
   if (!opts.backend)
     throw new Error ('You must provide a backend options.');
 
