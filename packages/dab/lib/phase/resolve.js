@@ -67,7 +67,7 @@ class Resolver {
 
   async resolve (value) {
     if (isFunction (value)) {
-      // The value is a function. Let's call the function when the resolve as it
+      // The value is a function. Let's call the function with the resolver as it
       // context. The result of the function can be a value or another Promise.
       // Either way, we need to resolve the return value, then resolve the result.
 

@@ -31,10 +31,10 @@ module.exports = function (values, func) {
       return undefined;
 
     if (isArray (result)) {
-      return Promise.all (result.map ((item, index, collection) => func.call (this, item, index, collection)));
+      return Promise.all (result.map ((...arguments) => func.call (this, ...arguments)));
     }
     else if (isPlainObject (result)) {
-      return props (mapValues (result, (value, key, obj) => func.call (this, value, key, obj)));
+      return props (mapValues (result, (...arguments) => func.call (this, ...arguments)));
     }
     else {
       throw new Error (`the map function does not support ${typeof values} types`);

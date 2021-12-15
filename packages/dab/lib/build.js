@@ -48,8 +48,10 @@ class Builder {
     if (isEmpty (unresolved))
       return snapshot;
 
-    if (this._iteration > this._maxIters)
+    if (this._iteration > this._maxIters) {
+      console.log (unresolved);
       throw new Error ('We have reached the max iterations');
+    }
 
     debug (`iteration ${this._iteration} complete`);
 
@@ -63,9 +65,8 @@ class Builder {
     const remaining = transform (resolved, (remaining, value, key) => {
       const {data, unresolved} = value;
 
-      if (data) {
+      if (data)
         set (snapshot, key, data);
-      }
 
       if (!isEmpty (unresolved)) {
         Object.assign (remaining, unresolved);
