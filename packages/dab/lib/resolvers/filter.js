@@ -26,6 +26,6 @@ module.exports = function (values, func) {
     if (result === undefined)
       return undefined;
 
-    return Promise.all (filter (result, () => func.call (this, ...arguments)));
+    return Promise.all (filter (result, (...arguments) => func.call (this, ...arguments)));
   };
 };

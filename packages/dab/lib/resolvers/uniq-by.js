@@ -26,6 +26,6 @@ module.exports = function (array, iteratee) {
     if (result === undefined)
       return undefined;
 
-    return uniqBy (result, () => iteratee.call (this, ...arguments));
+    return uniqBy (result, (...arguments) => iteratee.call (this, ...arguments));
   }
 };

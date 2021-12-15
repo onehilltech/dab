@@ -26,7 +26,7 @@ module.exports = function (n, func) {
     if (count === undefined)
       return undefined;
 
-    return Promise.all (times (count, () => func.call (this, ...arguments)));
+    return Promise.all (times (count, (...arguments) => func.call (this, ...arguments)));
   }
 };
 

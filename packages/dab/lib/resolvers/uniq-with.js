@@ -26,6 +26,6 @@ module.exports = function (array, comparator) {
     if (result === undefined)
       return undefined;
 
-    return uniqWith (result, () => comparator.call (this, ...arguments));
+    return uniqWith (result, (...arguments) => comparator.call (this, ...arguments));
   }
 };
