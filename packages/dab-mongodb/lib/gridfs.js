@@ -26,7 +26,7 @@ const path = require ('path');
 let identity = x => x;
 
 module.exports = function (file, db, bucketName, finish = identity) {
-  return function __dabGridFS () {
+  return async function __dabGridFS () {
     return new Promise ((resolve, reject) => {
       const bucket = new GridFSBucket (db, {bucketName});
       const contentType = mime.lookup (file);
