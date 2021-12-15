@@ -37,15 +37,10 @@ class Builder {
     this._opts = opts;
   }
 
-  /**
-   *
-   * @param data
-   * @returns {Promise<*>}
-   */
-  async build (data) {
+  async build (def) {
     this._iteration = 1;
 
-    const {data, unresolved} = await resolve (data, data, this._opts);
+    const { data, unresolved } = await resolve (def, def, this._opts);
     return this._resolve (data, unresolved);
   }
 
@@ -54,7 +49,7 @@ class Builder {
       return snapshot;
 
     if (this._iteration > this._maxIters)
-      return throw new Error ('We have reached the max iterations');
+      throw new Error ('We have reached the max iterations');
 
     debug (`iteration ${this._iteration} complete`);
 
@@ -91,8 +86,7 @@ async function build (data, opts = {}) {
   if (!opts.backend)
     throw new Error ('You must provide a backend options.');
 
-  let builder = new Builder (opts);
-  return builder.build (data);
+  return new Builder (opts).build (data);
 }
 
 module.exports = build;
