@@ -20,12 +20,12 @@ const {
 } = require ('lodash');
 
 module.exports = function (array, callback, accum = []) {
-  return function __dabReduce () {
-    return this.resolve (array).then (value => {
-      if (value === undefined)
-        return undefined;
+  return async function __dabReduce () {
+    const value = await this.resolve (array);
 
-      return reduce (value, callback, accum);
-    });
+    if (value === undefined)
+      return undefined;
+
+    return reduce (value, callback, accum);
   }
 };

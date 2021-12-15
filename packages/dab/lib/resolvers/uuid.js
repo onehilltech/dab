@@ -15,12 +15,10 @@
  *
  */
 
-const debug = require ('debug')('dab:uuid');
 const uuid = require ('uuid');
 
 module.exports = function (version = 'v1', options) {
   return function __dabUuId () {
-    debug ('generating an uuid');
     return uuid[version](options);
   }
 };

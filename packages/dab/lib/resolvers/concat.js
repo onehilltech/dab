@@ -22,15 +22,15 @@ const {
 } = require ('lodash');
 
 module.exports = function (...arrays) {
-  return function __dabConcat () {
-    return this.resolve (arrays).then (arrays => {
-      if (arrays === undefined)
-        return undefined;
+  return async function __dabConcat () {
+    const result = await this.resolve (arrays);
 
-      if (some (arrays, value => (value === undefined || isFunction (value))))
-        return undefined;
+    if (result === undefined)
+      return undefined;
 
-      return concat (...arrays);
-    });
+    if (some (result, value => (value === undefined || isFunction (value))))
+      return undefined;
+
+    return concat (...result);
   };
 };

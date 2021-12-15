@@ -19,8 +19,6 @@ const {
   isFunction
 } = require ('lodash');
 
-const debug = require ('debug') ('dab:get');
-
 module.exports = function (path) {
   return function __dabGet () {
     let value = this.get (path);
@@ -28,7 +26,6 @@ module.exports = function (path) {
     // If the result of get is a function, then that means the value has not
     // be resolved up to this point. We need to return undefined so the resolver
     // can include this this in the unresolved set.
-    debug (`getting path ${path}`);
 
     if (isFunction (value))
       value = undefined;

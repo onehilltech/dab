@@ -20,12 +20,12 @@ const {
 } = require ('lodash');
 
 module.exports = function (value) {
-  return function __dabKeys () {
-    return this.resolve (value).then (result => {
-      if (result === undefined)
-        return undefined;
+  return async function __dabKeys () {
+    const result = await this.resolve (value);
 
-      return keys (result);
-    });
+    if (result === undefined)
+      return undefined;
+
+    return keys (result);
   }
 };

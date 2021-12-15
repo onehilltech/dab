@@ -15,11 +15,8 @@
  *
  */
 
-const debug = require ('debug')('dab:id');
-
 module.exports = function (value) {
   return function __dabId () {
-    debug ('generating an id');
     return this.backend.generateId (value);
   }
 };

@@ -20,7 +20,12 @@ const {
 } = require ('lodash');
 
 module.exports = function (array, iteratee) {
-  return function __dabUniqBy () {
-    return this.resolve (array).then (result => result !== undefined ? uniqBy (result, iteratee) : undefined);
+  return async function __dabUniqBy () {
+    const result = await this.resolve (array);
+
+    if (result === undefined)
+      return undefined;
+
+    return uniqBy (result, () => iteratee.call (this, ...arguments));
   }
 };

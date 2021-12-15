@@ -16,23 +16,20 @@
  */
 
 const {
-  isFunction,
   isArray,
-  isObjectLike,
   some,
-  values
 } = require ('lodash');
 
 module.exports = function (value, func) {
-  return function __dabResolved () {
-    return this.resolve (value).then (result => {
-      if (result === undefined)
-        return undefined;
+  return async function __dabResolved () {
+    const result = await this.resolve (value);
 
-      if (isArray (result) && some (result, v => v === undefined))
-        return undefined;
+    if (result === undefined)
+      return undefined;
 
-      return func (value);
-    });
+    if (isArray (result) && some (result, v => v === undefined))
+      return undefined;
+
+    return func (value);
   }
 };

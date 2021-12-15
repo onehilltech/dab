@@ -22,25 +22,25 @@ const {
 } = require ('lodash');
 
 module.exports = function (value) {
-  return function __dabRef () {
-    return this.resolve (value).then (result => {
-      if (result === undefined)
+  return async function __dabRef () {
+    const result = await this.resolve (value);
+
+    if (result === undefined)
+      return undefined;
+
+    const idKey = this.opts.id || this.backend.getPrimaryKeyForPath (this.path);
+
+    if (isString (result)) {
+      const idPath = result + '.' + idKey;
+      const id = this.get (idPath);
+
+      if (isFunction (id))
         return undefined;
 
-      const idKey = this.opts.id || this.backend.getPrimaryKeyForPath (this.path);
-
-      if (isString (result)) {
-        const idPath = result + '.' + idKey;
-        const id = this.get (idPath);
-
-        if (isFunction (id))
-          return undefined;
-
-        return id;
-      }
-      else if (isPlainObject (result)) {
-        return result[idKey];
-      }
-    });
+      return id;
+    }
+    else if (isPlainObject (result)) {
+      return result[idKey];
+    }
   }
 };

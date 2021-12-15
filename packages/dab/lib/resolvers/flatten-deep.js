@@ -17,16 +17,16 @@
 
 const { flattenDeep, some, isFunction } = require ('lodash');
 
-module.exports = function (array) {
-  return function __dabFlattenDeep () {
-    return this.resolve (array).then (array => {
-      if (array === undefined)
-        return undefined;
+module.exports = function (_array) {
+  return async function __dabFlattenDeep () {
+    const array = await this.resolve (_array);
 
-      if (some (array, value => (value === undefined || isFunction (value))))
-        return undefined;
+    if (array === undefined)
+      return undefined;
 
-      return flattenDeep (array);
-    });
+    if (some (array, value => (value === undefined || isFunction (value))))
+      return undefined;
+
+    return flattenDeep (array);
   };
 };

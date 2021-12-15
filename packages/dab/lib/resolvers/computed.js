@@ -16,8 +16,7 @@
  */
 
 module.exports = function (func) {
-  return function __dabComputed () {
-    let result = func.call (this);
-    return Promise.resolve (result);
+  return async function __dabComputed () {
+    return func.call (this);
   }
 };

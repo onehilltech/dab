@@ -19,16 +19,13 @@ const {
   clone
 } = require ('lodash');
 
-const debug = require ('debug')('dab:clone');
-
 module.exports = function (value) {
-  return function __dabClone () {
-    return this.resolve (value).then (result => {
-      if (result === undefined)
-        return undefined;
+  return async function __dabClone () {
+    const result = await this.resolve (value);
 
-      debug (`cloning value ${result}`);
-      return clone (result);
-    });
+    if (result === undefined)
+      return undefined;
+
+    return clone (result);
   }
 };

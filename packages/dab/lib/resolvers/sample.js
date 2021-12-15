@@ -20,18 +20,16 @@ const {
   sampleSize
 } = require ('lodash');
 
-module.exports = function (values, n = 1) {
-  return function __dabSample () {
-    let pending = [
-      this.resolve (values),
-      this.resolve (n)
-    ];
+module.exports = function (_values, _n = 1) {
+  return async function __dabSample () {
+    const [values, n] = await Promise.all ([
+      this.resolve (_values),
+      this.resolve (_n)
+    ]);
 
-    return Promise.all (pending).then (([values, n]) => {
-      if (values === undefined || n === undefined)
-        return undefined;
+    if (values === undefined || n === undefined)
+      return undefined;
 
-      return n === 1 ? sample (values) : sampleSize (values, n);
-    });
+    return n === 1 ? sample (values) : sampleSize (values, n);
   }
 };

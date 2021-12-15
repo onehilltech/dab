@@ -20,13 +20,12 @@ const {
 } = require ('lodash');
 
 module.exports = function (values, func) {
-  return function __dabFilter () {
-    return this.resolve (values).then (result => {
-      if (result === undefined)
-        return undefined;
+  return async function __dabFilter () {
+    const result = await this.resolve (values);
 
-      let filtered = filter (result, (value, key) => func.call (this, value, key));
-      return Promise.all (filtered);
-    });
+    if (result === undefined)
+      return undefined;
+
+    return Promise.all (filter (result, () => func.call (this, ...arguments)));
   };
 };

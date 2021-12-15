@@ -21,25 +21,23 @@ const {
   mapValues
 } = require ('lodash');
 
-const BluebirdPromise = require ('bluebird');
+const { props } = require ('bluebird');
 
 module.exports = function (values, func) {
-  return function __dabMap () {
-    return this.resolve (values).then (result => {
-      if (result === undefined)
-        return undefined;
+  return async function __dabMap () {
+    const result = await this.resolve (values);
 
-      if (isArray (result)) {
-        let mapped = result.map ((item, index, collection) => func.call (this, item, index, collection));
-        return Promise.all (mapped);
-      }
-      else if (isPlainObject (result)) {
-        let mapped = mapValues (result, (value, key, obj) => func.call (this, value, key, obj));
-        return BluebirdPromise.props (mapped);
-      }
-      else {
-        return Promise.reject (new Error ('values is an invalid type'));
-      }
-    });
+    if (result === undefined)
+      return undefined;
+
+    if (isArray (result)) {
+      return Promise.all (result.map ((item, index, collection) => func.call (this, item, index, collection)));
+    }
+    else if (isPlainObject (result)) {
+      return props (mapValues (result, (value, key, obj) => func.call (this, value, key, obj)));
+    }
+    else {
+      throw new Error (`the map function does not support ${typeof values} types`);
+    }
   }
 };

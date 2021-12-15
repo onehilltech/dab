@@ -21,12 +21,12 @@ const {
 } = require ('lodash');
 
 module.exports = function (value) {
-  return function __dabValues () {
-    return this.resolve (value).then (result => {
-      if (result === undefined || isFunction (result))
-        return undefined;
+  return async function __dabValues () {
+    const result = await this.resolve (value);
 
-      return values (result);
-    });
+    if (result === undefined || isFunction (result))
+      return undefined;
+
+    return values (result);
   }
 };

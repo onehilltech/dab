@@ -17,17 +17,17 @@
 
 const { slice, isFunction } = require ('lodash');
 
-module.exports = function (array, start, end) {
-  return function __dabSlice () {
-    return Promise.all ([
-      this.resolve (array),
-      this.resolve (start),
-      this.resolve (end)
-    ]).then (([array, start, end]) => {
-      if (array === undefined || isFunction (start) || isFunction (end))
-        return undefined;
+module.exports = function (_array, _start, _end) {
+  return async function __dabSlice () {
+    const [array, start, end] = await Promise.all ([
+      this.resolve (_array),
+      this.resolve (_start),
+      this.resolve (_end)
+    ]);
 
-      return slice (array, start, end);
-    });
+    if (array === undefined || isFunction (start) || isFunction (end))
+      return undefined;
+
+    return slice (array, start, end);
   };
 };

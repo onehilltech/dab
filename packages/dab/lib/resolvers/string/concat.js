@@ -16,12 +16,12 @@
  */
 
 module.exports = function (...strings) {
-  return function __dabStringConcat () {
-    return this.resolve (strings).then (strings => {
-      if (strings === undefined)
-        return undefined;
+  return async function __dabStringConcat () {
+    const result = await this.resolve (strings);
 
-      return ''.concat (...strings);
-    });
+    if (result === undefined)
+      return undefined;
+
+    return ''.concat (...result);
   }
 };

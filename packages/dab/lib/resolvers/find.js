@@ -20,12 +20,12 @@ const {
 } = require ('lodash');
 
 module.exports = function (coll, predicate) {
-  return function __dabFind () {
-    return this.resolve (coll).then (result => {
-      if (result === undefined)
-        return undefined;
+  return async function __dabFind () {
+    const result = await this.resolve (coll);
 
-      return find (result, predicate);
-    });
+    if (result === undefined)
+      return undefined;
+
+    return find (result, predicate);
   }
 };

@@ -21,19 +21,19 @@ const {
   some
 } = require ('lodash');
 
-module.exports = function (array, size = 1) {
-  return function __dabChunk () {
-    return Promise.all ([
-      this.resolve (array),
-      this.resolve (size)
-    ]).then (([array, size]) => {
-      if (array === undefined || size === undefined)
-        return undefined;
+module.exports = function (_array, _size = 1) {
+  return async function __dabChunk () {
+    const [array, size] = await Promise.all ([
+      this.resolve (_array),
+      this.resolve (_size)
+    ]);
 
-      if (some (array, value => (value === undefined || isFunction (value))))
-        return undefined;
+    if (array === undefined || size === undefined)
+      return undefined;
 
-      return chunk (array, size);
-    });
+    if (some (array, value => (value === undefined || isFunction (value))))
+      return undefined;
+
+    return chunk (array, size);
   };
 };

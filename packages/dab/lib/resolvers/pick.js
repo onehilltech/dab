@@ -19,18 +19,16 @@ const {
   pick
 } = require ('lodash');
 
-module.exports = function (value, paths) {
-  return function __dabPick () {
-    let pending = [
-      this.resolve (value),
-      this.resolve (paths)
-    ];
+module.exports = function (_value, _paths) {
+  return async function __dabPick () {
+    const [value, paths] = await Promise.all ([
+      this.resolve (_value),
+      this.resolve (_paths)
+    ]);
 
-    return Promise.all (pending).then (([value, paths]) => {
-      if (value === undefined || paths === undefined)
-        return undefined;
+    if (value === undefined || paths === undefined)
+      return undefined;
 
-      return pick (value, paths);
-    });
+    return pick (value, paths);
   }
 };

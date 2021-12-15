@@ -18,12 +18,12 @@
 const { compact } = require ('lodash');
 
 module.exports = function (array) {
-  return function __dabCompact () {
-    return this.resolve (array).then (array => {
-      if (array === undefined)
-        return undefined;
+  return async function __dabCompact () {
+    const result = await this.resolve (array);
 
-      return compact (array);
-    });
+    if (result === undefined)
+      return undefined;
+
+    return compact (result);
   };
 };

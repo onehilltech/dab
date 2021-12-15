@@ -20,12 +20,12 @@ const {
 } = require ('lodash');
 
 module.exports = function (values) {
-  return function __dabShuffle () {
-    return this.resolve (values).then (result => {
-      if (result === undefined)
-        return undefined;
+  return async function __dabShuffle () {
+    const result = await this.resolve (values);
 
-      return shuffle (result);
-    });
+    if (result === undefined)
+      return undefined;
+
+    return shuffle (result);
   }
 };

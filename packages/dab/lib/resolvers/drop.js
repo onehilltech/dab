@@ -17,16 +17,16 @@
 
 const { drop } = require ('lodash');
 
-module.exports = function (array, n) {
-  return function __dabDrop () {
-    return Promise.all ([
+module.exports = function (_array, _n) {
+  return async function __dabDrop () {
+    const [array, n] = await Promise.all ([
       this.resolve (array),
       this.resolve (n)
-    ]).then (([array, n]) => {
-      if (array === undefined || n === undefined)
-        return undefined;
+    ]);
 
-      return drop (array, n);
-    });
+    if (array === undefined || n === undefined)
+      return undefined;
+
+    return drop (array, n);
   };
 };

@@ -16,11 +16,9 @@
  */
 
 const bcrypt = require ('bcrypt');
-const debug = require ('debug')('dab:hash');
 
 module.exports = function (value, rounds = 10) {
   return function __dabHash () {
-    debug ('generating hash value');
     return bcrypt.hash (value, rounds);
   }
 };

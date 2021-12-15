@@ -20,19 +20,13 @@ const {
 } = require ('lodash');
 
 module.exports = function (n, func) {
-  return function __dabTimes () {
-    return this.resolve (n).then (n => {
-      if (n === undefined)
-        return undefined;
+  return async function __dabTimes () {
+    const count = await this.resolve (n);
 
-      let results = new Array (n);
+    if (count === undefined)
+      return undefined;
 
-      times (n, i => {
-        results[i] = func.call (this, i);
-      });
-
-      return Promise.all (results);
-    });
+    return Promise.all (times (count, () => func.call (this, ...arguments)));
   }
 };
 
