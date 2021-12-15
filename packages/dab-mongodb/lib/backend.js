@@ -53,7 +53,7 @@ module.exports = Backend.extend ({
    * @param data
    * @returns {*}
    */
-  seed (conn, data) {
+  async seed (conn, data) {
     // We want to seed the data in the order that it appears in
     // the data set.
 
@@ -76,7 +76,7 @@ module.exports = Backend.extend ({
    * @param models
    * @returns {Promise<void>|*}
    */
-  clear (conn, models = []) {
+  async clear (conn, models = []) {
     if (isEmpty (conn.models))
       return Promise.resolve ();
 
