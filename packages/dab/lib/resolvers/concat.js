@@ -16,19 +16,14 @@
  */
 
 const {
-  concat,
-  isFunction,
-  some
+  concat
 } = require ('lodash');
 
 module.exports = function (...arrays) {
   return async function __dabConcat () {
     const result = await this.resolve (arrays);
 
-    if (result === undefined)
-      return undefined;
-
-    if (some (result, value => (value === undefined || isFunction (value))))
+    if (this.isUnresolved (result))
       return undefined;
 
     return concat (...result);

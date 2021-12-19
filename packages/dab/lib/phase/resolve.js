@@ -25,6 +25,7 @@ const {
   extend,
   mapValues,
   get,
+  some
 } = require ('lodash');
 
 class Resolver {
@@ -57,22 +58,37 @@ class Resolver {
   }
 
   getChild (path, opts) {
-    let childPath = this._path.slice ();
+    let parts = this._path.slice ();
 
     if (path !== undefined)
-      childPath.push (path);
+      parts.push (path);
 
-    return new Resolver (opts || this._opts, this._data, childPath);
+    return new Resolver (opts || this._opts, this._data, parts);
   }
 
   async resolve (value) {
+    function resolved (resolver, original) {
+      return function (result) {
+        // Add the unresolved values from the child resolver to our resolver.
+        if (this !== resolver && !isEmpty (resolver.unresolved))
+          extend (this.unresolved, resolver.unresolved);
+
+        // The the result is undefined, then we need to add it to our collection
+        // of unresolved values.
+        if (result === undefined)
+          this.unresolved[resolver.path] = original;
+
+        return result;
+      }
+    }
+
     if (isFunction (value)) {
       // The value is a function. Let's call the function with the resolver as it
       // context. The result of the function can be a value or another Promise.
       // Either way, we need to resolve the return value, then resolve the result.
 
       const ret = await value.call (this);
-      const result = this._resolved (this, value).call (this, ret);
+      const result = resolved (this, value).call (this, ret);
 
       return this.resolve (result);
     }
@@ -86,7 +102,7 @@ class Resolver {
         const resolver = this.getChild (index, childOpts);
 
         const ret = await resolver.resolve (item);
-        const result = this._resolved (resolver, item).call (this, ret);
+        const result = resolved (resolver, item).call (this, ret);
 
         return result !== undefined ? result : item;
       });
@@ -107,7 +123,7 @@ class Resolver {
         const resolver = this.getChild (key, childOpts);
 
         const ret = await resolver.resolve (value);
-        const result = this._resolved (resolver, value).call (this, ret);
+        const result = resolved (resolver, value).call (this, ret);
 
         return result !== undefined ? result : value;
       });
@@ -119,19 +135,11 @@ class Resolver {
     }
   }
 
-  _resolved (resolver, original) {
-    return function (result) {
-      // Add the unresolved values from the child resolver to our resolver.
-      if (this !== resolver && !isEmpty (resolver.unresolved))
-        extend (this.unresolved, resolver.unresolved);
-
-      // The the result is undefined, then we need to add it to our collection
-      // of unresolved values.
-      if (result === undefined)
-        this.unresolved[resolver.path] = original;
-
-      return result;
-    }
+  isUnresolved (value) {
+    return value === undefined ||
+      isFunction (value) ||
+      (isArray (value) && some (value, val => this.isUnresolved (val))) ||
+      (isPlainObject (value) && some (Object.values (value), val => this.isUnresolved (val)));
   }
 }
 
