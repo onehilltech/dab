@@ -22,7 +22,7 @@ const {
 } = require ('lodash');
 
 module.exports = function (value) {
-  return async function __dabRef () {
+  async function __dabRef () {
     const result = await this.resolve (value);
 
     if (result === undefined)
@@ -43,4 +43,11 @@ module.exports = function (value) {
       return result[idKey];
     }
   }
+
+  Object.defineProperty (__dabRef, 'key', {
+    value,
+    writeable: false
+  });
+
+  return __dabRef;
 };
