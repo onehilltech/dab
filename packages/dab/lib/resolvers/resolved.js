@@ -17,6 +17,7 @@
 
 const {
   isArray,
+  isFunction,
   some,
 } = require ('lodash');
 
@@ -24,12 +25,9 @@ module.exports = function (value, func) {
   return async function __dabResolved () {
     const result = await this.resolve (value);
 
-    if (result === undefined)
+    if (result === undefined || (isArray (result) && some (result, v => v === undefined)) || isFunction (result))
       return undefined;
 
-    if (isArray (result) && some (result, v => v === undefined))
-      return undefined;
-
-    return func (value);
+    return func (result);
   }
 };
