@@ -13,7 +13,7 @@
     "@onehilltech/dab": "^2.11.1",
     "bluebird": "^3.7.2",
     "lodash": "^4.17.15",
-    "mongoose": "^5.13.13",
+    "mongoose": "^6.10.5",
     "pluralize": "^8.0.0"
   },
   "devDependencies": {
