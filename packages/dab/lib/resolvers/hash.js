@@ -15,7 +15,7 @@
  *
  */
 
-const bcrypt = require ('bcrypt');
+const bcrypt = require ('bcryptjs');
 
 module.exports = function (value, rounds = 10) {
   return function __dabHash () {
