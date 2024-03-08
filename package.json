@@ -2,13 +2,13 @@
   "name": "dab-monorepo",
   "description": "a complex data builder that uses simple definitions",
   "private": false,
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/onehilltech/dab.git"
-  },
+  "repository": "onehilltech/dab",
   "author": "One Hill Technologies, LLC",
   "license": "Apache-2.0",
   "devDependencies": {
     "lerna": "^3.19.0"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

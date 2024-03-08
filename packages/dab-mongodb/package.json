@@ -10,11 +10,10 @@
   "author": "James H. Hill <james@onehilltech.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@onehilltech/dab": "^2.12.3",
+    "@onehilltech/dab": "*",
     "bluebird": "^3.7.2",
-    "lodash": "^4.17.15",
-    "mongoose": "^6.10.5",
-    "pluralize": "^8.0.0"
+    "mongodb": "^6.4.0",
+    "mongoose": "^8.2.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",

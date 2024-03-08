@@ -16,7 +16,7 @@ describe ('lib | backend', function () {
       return dab.build (data, { backend }).then (result => {
         expect (result).to.have.nested.property ('users[0]._id').that.is.instanceof (ObjectId);
 
-        expect (result.comments).to.have.length ();
+        expect (result.comments).to.have.length (2);
         expect (result).to.have.nested.property ('comments[0]._id').that.is.instanceof (ObjectId);
         expect (result).to.have.nested.property ('comments[0].user').that.eql (result.users[0]._id);
       });

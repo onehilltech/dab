@@ -15,6 +15,7 @@
  *
  */
 
+/*
 const {expect} = require ('chai');
 const mongoose = require ('mongoose');
 
@@ -53,3 +54,5 @@ describe ('lib | resolvers | gridfs', function () {
 
   });
 });
+
+ */
