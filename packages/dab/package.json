@@ -47,5 +47,8 @@
   "bin": {
     "dab": "./bin/dab"
   },
+  "engines": {
+    "node": ">=16.20.1"
+  },
   "gitHead": "7fc183d7891199e6fddf37f41f90871b37ac3ae2"
 }
